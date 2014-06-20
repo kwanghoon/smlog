@@ -1,0 +1,19 @@
+
+
+(* identifier *)
+
+type id = string
+
+(* type*)
+
+type tyvar = string
+ 
+datatype inout = IN | OUT
+ 
+datatype ty =
+    VarTy    of tyvar
+  | ConTy    of path * ty list
+  | RecordTy of (id * ty) list
+  | TupleTy  of ty list
+  | ForallTy of tyvar list * ty
+

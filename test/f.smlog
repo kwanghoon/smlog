@@ -1,0 +1,3 @@
+
+datatype R = C of {l1 : int, l2 : string, l3 : int list}
+

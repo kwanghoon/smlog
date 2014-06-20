@@ -1,0 +1,3 @@
+
+datatype D = C of unit
+

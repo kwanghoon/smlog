@@ -1,0 +1,6 @@
+
+fun op+ : (int * int : in, int : out)
+
+fun add : (int, int, int)
+
+fun add (X,Y,Z) = op+ ((X,Y),Z).

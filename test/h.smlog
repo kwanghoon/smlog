@@ -1,0 +1,2 @@
+
+datatype D = C of {name:string, age:int}

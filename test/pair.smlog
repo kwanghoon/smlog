@@ -1,0 +1,5 @@
+
+fun fst : (int * string, int)
+
+fun fst ((X,Y), X).
+

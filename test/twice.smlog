@@ -1,0 +1,27 @@
+
+fun print : (string : in)
+
+datatype Int = Zero | Succ of Int
+
+fun inc1 : (Int, Int)
+
+fun inc1 (N, Succ N) = print ("inc1\\n").
+
+fun inc2 : (Int, Int) 
+
+fun inc2 (N, Succ (Succ N)) = print ("inc2\\n").
+
+fun f : (Int, Int)
+
+fun f (X,Y) = print ("f -> "), inc1 (X,Y).
+
+    f (X,Y) = print ("f -> "), inc2 (X,Y).
+
+fun twice : (Int, Int)
+
+fun twice (X,Y) = print ("twice -> "), inc1 (X,W), inc1 (W,Y).
+
+    twice (X,Y) = print ("twice -> "), inc2 (X,W), inc2 (W,Y).
+
+
+

@@ -1,0 +1,59 @@
+
+
+(* 
+   Puzzle: Man, Wolf, Goat, Cabbage
+*)
+
+fun eq : (int : in, int : in, bool : out)
+
+fun member : (int, int list, bool)
+
+fun member (X, [], false).
+    member (X, X::XS, true).
+    member (X, Y::XS, B) = eq (X,Y,false), member (X, XS, B).
+
+fun move : (int, int)
+
+fun move (1010, 0010).
+    move (1010, 0000).
+
+    move (1011, 0001).
+    move (1011, 0010).
+
+    move (1101, 0101).
+    move (1101, 0001).
+    move (1101, 0100).
+
+    move (1110, 0010).
+    move (1110, 0100).
+
+    move (1111, 0101).
+
+    move (0010, 1010).
+    move (0000, 1010).
+
+    move (0001, 1011).
+    move (0010, 1011).
+
+    move (0101, 1101).
+    move (0001, 1101).
+    move (0100, 1101).
+
+    move (0010, 1110).
+    move (0100, 1110).
+
+    move (0101, 1111).
+
+fun path : (int list, int list)
+
+fun path (S :: P, [0000]) = move (S,0000).
+    path (S1 :: P1, S2 :: P2) = 
+       move (S1,S2),
+       member (S2, P1, false),
+       path (S2 :: S1 :: P1, P2).
+
+fun solve : (int list)
+
+fun solve (1111 :: P) = path ([1111], P).
+
+(* path (SOME [1010, 0010, 1110, 0100, 1101, 0101, 1111], SOME [0000]); *)

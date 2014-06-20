@@ -1,0 +1,379 @@
+
+(* Parser *)
+
+open Ast AstUtil Type Identifier
+
+%%
+
+%name SteadyCheck
+
+%pos int
+
+%nonterm start     of decl list
+       | decls     of decl list
+       | decl      of decl
+
+       | tb        of tb list
+       | db        of db list
+       | dbrhs     of dbrhs
+       | constrs   of (id * ty option) list
+       | constr    of id * ty option
+
+       | op_op     of unit
+
+       | relationtype  of id * (ty * inout option) list 
+       | tyinouts  of (ty * inout option) list
+       | tyinout   of ty * inout option
+       | inout     of inout
+       | ty        of ty
+       | ty'       of ty
+       | tyseq   of ty list
+       | tyrow   of (id * ty) list
+       | tyrow'  of (id * ty) list
+       | tytuple of ty list
+       | tyvars    of id list
+       | tyvar_pc  of id list
+       | tyvarseq  of id list
+
+       | rb       of rb list
+       | relationdefs of id * relation list
+       | relationdef  of relation
+
+       | reluses   of (path * exp list * id option) list
+       | reluse    of path * exp list * id option
+       | reldef    of id * pat list
+
+       | pat         of pat
+       | pat_list    of pat list
+       | or_pat_list of pat list
+       | apat        of pat
+       | apat'       of pat
+       | apats       of pat list
+       | plabels     of (id * pat) list * bool
+       | plabel      of id * pat
+       | exp      of exp
+       | app_exp  of exp list
+       | aexp     of exp
+       | exp_ps   of exp
+       | exp_2c   of exp list
+       | exp_list of exp list
+       | elabel   of id * exp
+       | elabels  of (id * exp) list
+       | selector  of id
+       | tycon     of id list
+       | id        of id
+       | ident     of id
+       | qid    of id list
+       | idclass   of id
+       | int       of int
+
+%term    EOF | SEMICOLON
+
+       | ID of string | TYVAR of string
+
+       | INT of int | INT0 of int | WORD of int | REAL of string 
+       | STRING of string | CHAR of string  
+
+       | ABSTYPE | AND | ARROW | AS | BAR | CASE | DATATYPE 
+       | DOTDOTDOT | ELSE | END | EQUALOP | EQTYPE | EXCEPTION
+       | DO | DOT | DARROW | FN | FUN | FUNCTOR | FUNSIG | HANDLE 
+       | HASH | IF | IN | OUT | INCLUDE | INFIX | INFIXR | LAZY
+       | LET | LOCAL | NONFIX | OF | OP | OPEN | OVERLOAD
+       | RAISE | REC | SHARING | SIG | SIGNATURE | STRUCT
+       | STRUCTURE | THEN | TYPE | VAL | WHERE | WHILE 
+       | WILD | WITH | WITHTYPE | ASTERISK | COLON | COLONGT
+       | COMMA | LBRACE | LBRACKET | LPAREN | RBRACE | RBRACKET
+       | RPAREN | ORELSE | ANDALSO | VECTORSTART 
+       | BEGINQ | ENDQ of string | OBJL of string | AQID of string
+
+%nonassoc WITHTYPE
+%right AND
+%right AS
+%right ARROW
+%left COLON
+
+%start start
+
+%eop EOF
+
+%noshift EOF
+
+%verbose
+
+%%
+
+start : decls  ( decls )
+
+decls : decl decls  ( decl :: decls )
+      |             ( [] )
+
+decl  : FUN rb          ( RelationDec (rb,[]) )
+      | FUN tyvarseq rb ( RelationDec (rb,tyvarseq) )
+
+      | FUN relationtype    ( RelationSigDec relationtype )
+
+      | DATATYPE db
+           ( DatatypeDec (db, NONE) )
+      | DATATYPE db WITHTYPE tb
+           ( DatatypeDec (db, SOME tb) )
+      | TYPE tb
+           ( TypeDec tb )
+
+(* Relation declarations *)
+
+rb    : rb AND rb  ( rb1 @ rb2 )
+      | relationdefs   
+           ( case relationdefs of (id, relations) => 
+               [Rb (id,relations,true)] )
+
+relationdefs 
+      : relationdef relationdefs  
+          ( case (relationdef, relationdefs) of
+              (Relation {name=id,...},
+               (_,relationdefs')) => (id, relationdef :: relationdefs') )
+      | relationdef           
+          ( case relationdef of 
+              Relation {name=id,...} => (id, [relationdef]) )
+
+(* Datatype and type synonym declarations *)
+
+tb    : tyvars idclass EQUALOP ty  
+           ( [Tb {tyc=idclass, tyvars=tyvars, def=ty}] )
+      | tb AND tb                
+           ( tb1 @ tb2 )
+
+db    : db AND db                   
+           ( db1 @ db2 )
+      | tyvars ident EQUALOP dbrhs  
+           ( [Db {tyc=ident, tyvars=tyvars, rhs=dbrhs}] )
+
+dbrhs : constrs          ( Constrs constrs )
+      | DATATYPE tycon   ( Repl tycon )
+
+constrs 
+      : constr               ( [constr] )
+      | constr BAR constrs   ( constr :: constrs )
+
+constr
+      : op_op ident        ( (ident, NONE) )
+      | op_op ident OF ty  ( (ident, SOME ty) )
+
+op_op : OP  ()
+      |     ()
+
+(* Type Declarations *)
+
+relationtype
+      : ident COLON LPAREN tyinouts RPAREN ( (ident, tyinouts ) )
+      | OP ident COLON LPAREN tyinouts RPAREN ( ("op" ^ ident, tyinouts ) )
+
+tyinouts
+      : tyinout COMMA tyinouts   ( tyinout :: tyinouts )
+      | tyinout                  ( [tyinout] )
+
+tyinout
+      : ty COLON inout  ( (ty, SOME inout) )
+      | ty              ( (ty, NONE) )
+
+inout : IN    ( IN  )
+      | OUT   ( OUT )
+
+ty    : tytuple      ( TupleTy tytuple )
+      | ty ARROW ty  ( ConTy ([arrowTycon], [ty1,ty2]) )
+      | ty'          ( ty' )
+
+ty'   : LBRACE tyrow RBRACE        ( RecordTy (Util.sortLabels tyrow) )
+      | LPAREN ty RPAREN           ( ty )
+      | tycon                      ( ConTy (tycon, []) )
+      | ty' tycon                  ( ConTy (tycon, [ty']) )
+      | LPAREN tyseq RPAREN tycon  ( ConTy (tycon, tyseq) )
+      | TYVAR                      ( VarTy TYVAR )
+
+tyseq
+      : ty COMMA tyseq  ( ty :: tyseq )
+      | ty COMMA ty       ( [ty1, ty2] )
+
+tyrow
+      : tyrow' ( tyrow' )
+      |          ( [] )
+
+tyrow'
+      : selector COLON ty COMMA tyrow'  
+                 ( (selector,ty) :: tyrow' )
+      | selector COLON ty                 
+                 ( [(selector,ty)] )
+
+tytuple
+      : ty' ASTERISK tytuple  ( ty' :: tytuple )
+      | ty' ASTERISK ty'      ( [ty'1, ty'2] )
+
+tyvars 
+      : TYVAR                   ( [TYVAR] )
+      | LPAREN tyvar_pc RPAREN  ( tyvar_pc )
+      |                         ( [] )
+
+tyvarseq
+      : TYVAR                  ( [TYVAR] )
+      | LPAREN tyvar_pc RPAREN ( tyvar_pc )
+
+tyvar_pc 
+      : TYVAR                  ( [TYVAR] )
+      | TYVAR COMMA tyvar_pc   ( TYVAR :: tyvar_pc )
+
+(* Relation Declarations *)
+
+relationdef  
+      : reldef EQUALOP reluses  
+          ( Relation {name=(#1 reldef), args=(#2 reldef), body=reluses} )
+      | reldef DOT
+          ( Relation {name=(#1 reldef), args=(#2 reldef), body=[]} )
+
+reldef
+      : ident LPAREN pat_list RPAREN    ( (ident, pat_list) )
+
+reluses
+      : reluse COMMA reluses  ( reluse :: reluses )
+      | reluse DOT            ( [reluse] )
+
+reluse
+      : qid LPAREN exp_list RPAREN   ( (qid, exp_list, NONE) )
+      | OP ident LPAREN exp_list RPAREN   ( (["op" ^ ident], exp_list, NONE) )
+      | ID qid LPAREN exp_list RPAREN   ( (qid, exp_list, SOME ID) )
+
+(* Pattern *)
+
+pat   : pat AS pat          ( layered (pat1, pat2) )
+      | pat COLON ty        ( ConstraintPat {pattern=pat,constraint=ty} )
+      | apats               ( FlatAppPat apats )
+
+apats : apat         ( [apat] )
+      | apat apats   ( apat :: apats )
+
+apat  : apat'                              ( apat' )
+      | LPAREN pat RPAREN                  ( pat )
+      | id                                 ( VarPat [id] )
+      | LPAREN RPAREN                      ( unitPat )
+      | LPAREN pat COMMA pat_list RPAREN   ( TuplePat 
+                                               (pat :: pat_list) )
+      | LPAREN pat BAR or_pat_list RPAREN  ( OrPat 
+                                               (pat :: or_pat_list) )
+
+apat' : OP ident                        ( VarPat [ident] )
+      | idclass DOT qid                 ( VarPat (idclass :: qid) )
+      | int                             ( IntPat int )
+      | WORD                            ( WordPat WORD )
+      | STRING                          ( StringPat STRING )
+      | CHAR                            ( CharPat CHAR )
+      | WILD                            ( WildPat )
+      | LBRACKET RBRACKET               ( ListPat nil )
+      | LBRACKET pat_list RBRACKET      ( ListPat pat_list )
+      | VECTORSTART RBRACKET            ( VectorPat nil )
+      | VECTORSTART pat_list RBRACKET   ( VectorPat pat_list )
+      | LBRACE RBRACE                   ( unitPat  )
+      | LBRACE plabels RBRACE           ( let val (d,f) = plabels
+                                          in  RecordPat 
+                                                {def=Util.sortLabels d,
+                                                flexibility=f} end )
+
+plabels
+      : plabel COMMA plabels  ( let val (a,(b,fx)) = (plabel, plabels)
+                                in  (a::b, fx) end )
+      | plabel                ( [plabel], false )
+      | DOTDOTDOT             ( nil, true )
+
+plabel
+      : selector EQUALOP pat  ( (selector, pat) )
+      | idclass               ( (idclass, VarPat [idclass] ) )
+      | idclass AS pat        ( (idclass, LayeredPat 
+                                            {varPat=VarPat [idclass],
+                                             expPat=pat} ) )
+      | idclass COLON ty      ( (idclass, VarPat [idclass] ) )
+      | idclass COLON ty AS pat 
+                              ( (idclass, LayeredPat
+                                            {varPat=VarPat [idclass],
+                                             expPat=pat} ) )
+
+pat_list
+      : pat                 ( [pat] )
+      | pat COMMA pat_list  ( (pat :: pat_list) )
+
+or_pat_list
+      : pat                  ( [pat] )
+      | pat BAR or_pat_list  ( (pat :: or_pat_list) )
+
+(* Expression *)
+
+exp_ps 
+      : exp                   ( exp )
+(*       | exp SEMICOLON exp_ps  ( exp :: exp_ps ) *)
+
+
+exp   : exp COLON ty    ( ConstraintExp {expr=exp,constraint=ty} )
+      | app_exp         ( FlatAppExp app_exp )
+
+app_exp
+      : aexp            ( [aexp] )
+      | ident           ( [VarExp [ident]] )
+      | aexp app_exp    ( aexp :: app_exp )
+      | ident app_exp   ( VarExp [ident] :: app_exp )
+
+aexp  : OP ident                   ( VarExp [ident] )
+      | idclass DOT qid            ( VarExp (idclass :: qid) )
+      | int                        ( IntExp int )
+      | WORD                       ( WordExp WORD )
+      | REAL                       ( RealExp REAL )
+      | STRING                     ( StringExp STRING )
+      | CHAR                       ( CharExp CHAR )
+      | HASH selector              ( SelectorExp selector )
+      | LBRACE elabels RBRACE      ( RecordExp elabels )
+      | LBRACE RBRACE              ( RecordExp [] )
+      | LPAREN RPAREN              ( unitExp )
+      | LPAREN exp_ps RPAREN       ( exp_ps )
+      | LPAREN exp_2c RPAREN       ( TupleExp exp_2c )
+      | LBRACKET exp_list RBRACKET ( ListExp exp_list )
+      | LBRACKET RBRACKET ( ListExp [] )
+      | VECTORSTART exp_list RBRACKET ( VectorExp exp_list )
+      | VECTORSTART RBRACKET ( VectorExp [] )
+      
+exp_2c
+      : exp COMMA exp_2c           ( exp :: exp_2c )
+      | exp COMMA exp              ( [exp1, exp2] )
+
+exp_list
+      : exp                 ( [exp] )
+      | exp COMMA exp_list  ( exp :: exp_list )
+
+elabel
+      : selector EQUALOP exp  ( selector, exp )
+
+elabels
+      : elabel COMMA elabels  ( elabel :: elabels )
+      | elabel                ( [elabel] )
+
+(* Identifiers *)
+
+int   : INT   ( INT )
+      | INT0  ( INT0 )
+
+idclass 
+      : ID    ( ID )     
+      | OUT   ( "out" )
+
+id    : idclass   ( idclass )
+      | ASTERISK  ( "*" )
+
+ident : idclass   ( idclass )
+      | ASTERISK  ( "*" )
+      | EQUALOP   ( "=" )
+
+qid 
+      : ident               ( [ident] )
+      | idclass DOT qid  ( idclass :: qid )
+
+tycon : idclass             ( [idclass] )
+      | idclass DOT tycon   ( idclass :: tycon )
+
+selector
+      : id   ( id )
+      | INT  ( Int.toString INT )
+

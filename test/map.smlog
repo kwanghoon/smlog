@@ -1,0 +1,7 @@
+
+fun map : (int -> int, int list, int list)
+
+fun map (F, [], []).
+
+    map (F, X::XS, (F : int -> int) X :: YS) = map (F, XS, YS).
+

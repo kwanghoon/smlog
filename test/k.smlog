@@ -1,0 +1,15 @@
+
+
+fun member : (int, int list)
+
+fun member (X, X::XS).
+    member (X, Y::XS) = member (X,XS).
+
+fun randomInt : (int)
+
+fun randomInt (X) = member (X, [1,2,3,4,5,6,7,8,9]).
+
+fun randomList : (int list)
+
+fun randomList ([ ]).
+    randomList (X :: XS) = randomInt (X), randomList (XS).

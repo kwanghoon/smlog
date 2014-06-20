@@ -1,0 +1,19 @@
+
+(* Excerpted from Clark&Tarnlund's paper *)
+
+type 'a diff_list = 'a list * 'a list
+
+fun rep : (int list, int diff_list)
+
+fun rep ([], (L,L)).
+
+    rep (X::XS, (X :: M,L2)) = rep (XS, (M,L2)).
+
+
+fun repconcat : (int diff_list, int diff_list, int diff_list)
+
+fun repconcat ((L1, M), (M, L2), (L1, L2)).
+
+fun concat : (int list, int list, int list)
+
+fun concat (L1, L2, R) = rep (L1, R1), rep (L2, R2), repconcat (R1,R2,(R,[])).

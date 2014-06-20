@@ -1,0 +1,24 @@
+(* append as defined in prolog *)
+
+fun append : (int list, int list, int list)
+
+fun append ([ ], YS, YS).
+    append (X :: XS, YS, X :: ZS) =  append (XS, YS, ZS).
+
+fun intVal : (int)
+
+fun intVal ( 1 ).
+    intVal ( 2 ).
+    intVal ( 3 ).
+    intVal ( 4 ).
+    intVal ( 5 ).
+
+fun intList : (int list)
+
+fun intList ([]).
+    intList (X :: XS) = intList (XS), intVal (X).
+
+fun appendIntList : (int list, int list, int list)
+
+fun appendIntList (XS, YS, ZS) = append (XS, YS, ZS), intList (XS), intList (YS).
+

@@ -1,0 +1,8 @@
+(* append as defined in prolog *)
+
+fun append : (int list, int list, int list)
+
+fun append ([ ], YS, YS).
+    append (X :: XS, YS, X :: ZS) =  append (XS, YS, ZS).
+
+

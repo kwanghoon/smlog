@@ -1,0 +1,6 @@
+
+fun sort : (int list)
+
+fun sort ([]).
+    sort ([x]).
+    sort (X :: Y :: XS) = sort (Y :: XS).

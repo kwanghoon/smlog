@@ -1,0 +1,226 @@
+
+type id = string
+
+type label = int
+
+type flowset = label list
+
+datatype exp = Var of id * label
+             | Lam of label * id * exp
+             | App of exp * exp * label
+
+fun label : (exp, label)
+
+fun label (Var (_, L), L).
+
+    label (Lam (L, _, _), L).
+
+    label (App (_, _, L), L).
+
+datatype edge = NN of label * label
+              | VN of id * label
+
+fun isin : (edge, edge list)
+ 
+fun isin (NN (L1,L2), NN (L1,L2) :: XS).
+
+    isin (VN (X,L), VN (X,L) :: XS).
+
+    isin (X, Y :: XS) = isin (X, XS).
+
+
+fun appendEdge : (edge list, edge list, edge list)
+
+fun appendEdge ([], XS, XS).
+
+    appendEdge (X::XS, YS, X::ZS) = not isin (X, YS), appendEdge (XS, YS, ZS).
+
+    appendEdge (X::XS, YS, ZS) = isin (X, YS), appendEdge (XS, YS, ZS).
+
+
+datatype LamInfo = Label of label
+                 | Bv    of label * id
+                 | Body  of label * label
+
+fun isinLamInfo : (LamInfo, LamInfo list)
+
+fun isinLamInfo (Label L, (Label L) :: XS).
+
+    isinLamInfo (Bv (L,X), (Bv (L,X)) :: XS).
+
+    isinLamInfo (Body (L1,L2), (Body (L1,L2)) :: XS).
+
+    isinLamInfo (X, Y :: XS) = isinLamInfo (X, XS).
+
+fun appendLamInfo : (LamInfo list, LamInfo list, LamInfo list)
+
+fun appendLamInfo ([], XS, XS).
+
+    appendLamInfo (X::XS, YS, X::ZS) = appendLamInfo (XS, YS, ZS).
+
+fun gatherLam : (exp, LamInfo list)
+
+fun gatherLam (Var (X,L), []).
+
+    gatherLam (Lam (L,X,E), (Label L) :: (Bv (L,X)) :: (Body (L,LE)) :: G) = 
+
+      label (E, LE),
+
+      gatherLam (E, G).
+
+    gatherLam (App (E1,E2,L), G3) = 
+
+      gatherLam (E1, G1),
+
+      gatherLam (E2, G2),
+
+      appendLamInfo (G1, G2, G3).
+
+
+fun gather  : (LamInfo list, exp, edge list, edge list)
+fun addBv   : (LamInfo list, label, edge list, label, edge list)
+fun addBody : (LamInfo list, label, edge list, label, edge list)
+
+fun gather (LamInfos, Var (X,L), G1, G1).
+
+    gather (LamInfos, Lam (L,X,E), G1, NN (L,L) :: G2) = 
+
+      not isin ( NN (L,L), G1 ),
+
+      gather (LamInfos, E, G1, G2).
+
+    gather (LamInfos, Lam (L,X,E), G1, G2) = 
+
+      isin ( NN (L,L), G1 ),
+
+      gather (LamInfos, E, G1, G2).
+
+    gather (LamInfos, App (E1,E2,L), G1, G12345) = 
+
+      gather (LamInfos, E1, G1, G2), 
+
+      appendEdge (G1, G2, G12),
+
+      gather (LamInfos, E2, G12, G3),
+
+      appendEdge (G12, G3, G123),
+
+      label (E1, L1),
+
+      label (E2, L2),
+
+      addBv (LamInfos, L1, G123, L2, G4),
+
+      appendEdge (G123, G4, G1234),
+
+      addBody (LamInfos, L1, G1234, L, G5),
+
+      appendEdge (G1234, G5, G12345).
+
+and addFv (LamInfos, X, L, G, [NN (L,L')]) =
+
+      isin (VN (X,L'), G).
+
+    addFv (LamInfos, X, L, G, []) =
+
+      not isin (VN (X,L'), G).
+
+and addBv (LamInfos, L, G, Lapparg, [VN (X,Lapparg)]) =
+
+      isinLamInfo (Bv (L',X), LamInfos), isin (NN (L,L'), G).
+
+    addBv (LamInfos, L, G, Lapparg, []) =
+
+      not isinLamInfo (Bv (L',X), LamInfos).
+
+    addBv (LamInfos, L, G, Lapparg, []) =
+
+      isinLamInfo (Bv (L',X), LamInfos), not isin (NN (L,L'), G).
+
+and addBody (LamInfos, L, G, Lapp, [NN (Lapp, Lbody)]) =
+
+      isinLamInfo (Body (L',Lbody), LamInfos), isin (NN (L,L'), G).
+
+    addBody (LamInfos, L, G, Lapp, []) =
+
+      not isinLamInfo (Body (L',Lbody), LamInfos).
+
+    addBody (LamInfos, L, G, Lapp, []) =
+
+      isinLamInfo (Body (L',Lbody), LamInfos), not isin (NN (L,L'), G).
+
+fun print : (string : in)
+fun printInt : (int : in)
+fun length : (edge list : in, int : out)
+
+datatype num = Zero | Succ of num
+
+fun loopGather : (LamInfo list, exp, edge list, edge list, bool)
+
+fun transitive : (edge list, edge list)
+fun tran : (edge, edge list, edge list)
+
+fun null : (edge list : in, bool : out)
+
+fun eq : (edge list : in, edge list : in, bool : out)
+
+fun eqLabel : (label : in, label : in, bool : out)
+
+fun transitive ([], []).
+
+    transitive ([X], [X]). 
+
+    transitive (NN (L1,L2) :: G, NN (L1,L2) :: G'') =
+
+      transitive (G, G'), 
+
+      tran (NN (L1,L2), G', G'').
+
+    transitive (VN (X,L) :: G, VN (X,L) :: G') = 
+
+      transitive (G, G').
+
+and tran (NN (L1,L2), [], []).
+
+    tran (NN (L1,L2), NN (L2,L3)::G, NN (L2,L3) :: NN (L1,L3)::G') =
+
+      tran (NN (L1,L2), G, G').
+
+    tran (NN (L1,L2), NN (L3,L4)::G, NN (L3,L4)::G') =
+
+      eqLabel (L2,L3,false), tran (NN (L1,L2), G, G').
+
+    tran (NN (L1,L2), VN (X,L)::G, VN (X,L)::G') =
+
+      tran (NN (L1,L2), G, G').
+
+fun loopGather (LamInfos, E, G1, G, false) = 
+
+      gather (LamInfos, E, G1, G2),
+
+      transitive (G2, G3),
+
+      eq (G1, G3, flag),
+
+      print ("loop "),
+
+      loopGather (LamInfos, E, G3, G, flag).
+
+    loopGather (LamInfos, E, G1, G1, true).
+
+fun cfa : (exp, edge list, edge list)
+
+fun cfa (E, G1, G2) =
+
+      gatherLam (E,LamInfos),
+
+      loopGather (LamInfos, E, G1, G2, false).
+
+(*
+
+App ( App (  Lam (1, "f", Lam (2, "x", App (Var ("f",8), Var ("x",9), 5))),
+             Lam (3, "a", Var ("a",10)), 6),
+      Lam (4, "b", Var ("b",11)), 7)
+
+*)
+

@@ -1,0 +1,22 @@
+
+fun zero : (int)
+
+fun zero (0).
+
+fun positive : (int)
+
+fun positive (N) = not zero (N).
+
+fun member : (int, int list)
+
+fun member (X, X::XS).
+
+    member (X, Y::XS) = member (X,XS).
+
+fun set : (int, int list, int list)
+
+fun set (X, YS, YS) = member (X,YS).
+
+    set (X, YS, X::YS) = not member (X,YS).
+
+

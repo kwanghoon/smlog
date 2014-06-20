@@ -1,0 +1,249 @@
+
+(* depth *)
+
+datatype depth = Zero | Succ of depth
+
+(* expression *)
+
+type id = string
+
+datatype ty = 
+   TyVar of string
+ | TyUnit
+ | TyTup of ty * ty
+ | TyList of ty
+ | TyExn
+ | TyFun of ty * ty
+
+datatype exp = 
+   Var of id
+ | Fix of id * ty * id * exp
+ | App of exp * exp
+ | Unit
+ | Tup of exp * exp
+ | Nil
+ | Cons of exp * exp
+ | CaseList of exp * exp * id * id * ty * exp
+ | Exn of string
+ | Raise of exp
+ | Handle of exp * id * exp
+
+type valexp = exp
+
+type tyenv = (id * ty) list
+
+(* Evaluation *)
+
+fun subst : (depth, exp, string, valexp, exp)
+
+fun subst (Succ D, Var X, X, E, E).
+
+    subst (Succ D, Var X, Y, E, Var X).
+
+    subst (Succ D, Fix (F,T,X,E0), F, E, Fix (F,T,X,E0)).
+
+    subst (Succ D, Fix (F,T,X,E0), X, E, Fix (F,T,X,E0)).
+
+    subst (Succ D, Fix (F,T,X,E0), Y, E, Fix (F,T,X,E1)) 
+      = subst (D, E0, Y, E, E1).
+
+    subst (Succ D, App (E1,E2), X, E, App (E3,E4)) 
+      = subst (D, E1, X, E, E3), subst (D, E2, X, E, E4).
+
+    subst (Succ D, Unit, X, E, Unit).
+
+    subst (Succ D, Tup (E1,E2), X, E, Tup (E3,E4)) 
+      = subst (D, E1, X, E, E3), subst (D, E2, X, E, E4).
+
+    subst (Succ D, Nil, X, E, Nil).
+
+    subst (Succ D, Cons (E1,E2), X, E, Cons (E3,E4)) 
+      = subst (D, E1, X, E, E3), subst (D, E2, X, E, E4).
+
+    subst (Succ D, CaseList (E0,E1,X,Y,T,E2), X, E, CaseList (E3,E4,X,Y,T,E2))
+      = subst (D, E0, X, E, E3), subst (D, E1, X, E, E4).
+
+    subst (Succ D, CaseList (E0,E1,Y,X,T,E2), X, E, CaseList (E3,E4,Y,X,T,E2))
+      = subst (D, E0, X, E, E3), subst (D, E1, X, E, E4).
+
+    subst (Succ D, CaseList (E0,E1,Y,Z,T,E2), X, E, CaseList (E3,E4,Y,Z,T,E5))
+      = subst (D, E0, X, E, E3), subst (D, E1, X, E, E4), subst (D, E2, X, E, E5).
+
+    subst (Succ D, Exn Y, X, E, Exn Y).
+
+    subst (Succ D, Raise E0, X, E, Raise E1) 
+      = subst (D, E0, X, E, E1).
+
+    subst (Succ D, Handle (E1,X,E2), X, E, Handle (E3,X,E2)) 
+      = subst (D, E1, X, E, E3).
+
+    subst (Succ D, Handle (E1,Y,E2), X, E, Handle (E3,X,E4)) 
+      = subst (D, E1, X, E, e3), subst (D, E2, X, E, E4).
+
+
+type env = (id * valexp) list
+
+fun substEnv : (depth, env, exp, exp)
+
+fun substEnv (D, [], E, E).
+
+    substEnv (D, (X,V)::ENV, E, E1)
+      = subst (D, E, X, V, E0),
+        substEnv (D, ENV, E0, E1).
+
+fun lookupEnv : (id, env, valexp)
+
+fun lookupEnv (X, (X,V)::ENV, V).
+    lookupEnv (X, (Y,W)::ENV, V) = lookupEnv (X, ENV, V).
+
+fun lookupTyEnv : (id, tyenv, ty)
+
+fun lookupTyEnv (X, (X,T)::ENV, T).
+    lookupTyEnv (X, (Y,S)::ENV, T) = lookupTyEnv (X, ENV, T).
+
+fun eval : (depth, env, exp, valexp)
+
+fun eval (Succ D, ENV, Var X, V) 
+      = lookupEnv (X, ENV, V).
+
+    eval (Succ D, ENV, Fix (F,T,X,E), Fix (F,T,X,E0))
+      = substEnv (Succ D, ENV, Fix (F,T,X,E), Fix (F,T,X,E0)).
+
+    eval (Succ D, ENV, App (E1,E2), V)
+      = eval (D, ENV, E1, Fix (F,T,X,E3)), 
+        eval (D, ENV, E2, V2),
+        eval (D, (X,V2) :: (F,Fix (F,TyFun(T1,T2),X,E3)) :: ENV, E3, V).
+
+    eval (Succ D, ENV, Unit, Unit).
+
+    eval (Succ D, ENV, Tup (E1,E2), Tup (V1,V2)) 
+      = eval (D, ENV, E1, V1), 
+        eval (D, ENV, E2, V2).
+
+    eval (Succ D, ENV, Nil, Nil).
+
+    eval (Succ D, ENV, Cons (E1,E2), Cons (V1,V2))
+       = eval (D, ENV, E1, V1), 
+         eval (D, ENV, E2, V2).
+
+    eval (Succ D, ENV, CaseList (E,E1,X,Y,TyList T,E2), V) 
+       = eval (D, ENV, E, Nil), 
+         eval (D, ENV, E1, V).
+
+    eval (Succ D, ENV, CaseList (E,E1,X,Y,TyList T,E2), V) 
+       = eval (D, ENV, E, Cons (V1,V2)), 
+         eval (D, (X,V1) :: (Y,V2) :: ENV, E2, V).
+
+    eval (Succ D, ENV, Exn X, Exn X).
+
+    eval (Succ D, ENV, Raise E, Exn X) 
+       = eval (D, ENV, E, Exn X).
+
+    eval (Succ D, ENV, Handle (E1, X, E2), V) 
+       = eval (D, ENV, E1, Exn X), 
+         eval (D, ENV, E2, V).
+
+(* How do we enforce the inequality of X and Y ? *)
+
+    eval (Succ D, ENV, Handle (E1, X, E2), Exn Y) 
+       = eval (D, ENV, E1, Exn Y).
+
+    eval (Succ D, ENV, Handle (E1, X, E2), Exn Y) 
+       = eval (D, ENV, E1, V).
+
+(* Typing *)
+
+fun typing : (depth, tyenv, exp, ty)
+
+fun typing (Succ D, TENV, Var X, T) 
+      = lookupTyEnv (X, TENV, T).
+
+    typing (Succ D, TENV, Fix (F, TyFun (T1,T2), X, E), TyFun (T1,T2))
+      = typing (D, (X,T1) :: (F,TyFun (T1,T2)) :: TENV, E, T2).
+
+    typing (Succ D, TENV, App (E1, E2), T2) 
+      = typing (D, TENV, E1, TyFun (T1,T2)), 
+        typing (D, TENV, E2, T1).
+
+    typing (Succ D, TENV, Nil, TyUnit).
+
+    typing (Succ D, TENV, Tup (E1, E2), TyTup (T1,T2)) 
+      = typing (D, TENV, E1, T1), 
+        typing (D, TENV, E2, T2).
+
+    typing (Succ D, TENV, Nil, TyList T).
+
+    typing (Succ D, TENV, Cons (E1,E2), TyList T) 
+      = typing (D, TENV, E1, T), 
+        typing (D, TENV, E2, TyList T).
+
+(* How to enforce the inequality of X and Y ? *)
+
+    typing (Succ D, TENV, CaseList (E, E1, X, Y, TyList T1, E2), T2)
+      = typing (D, TENV, E, TyList T1), 
+        typing (D, TENV, E1, T2), 
+        typing (D, (X,T1) :: (Y,TyList T1) :: TENV, E2, T2).  
+
+    typing (Succ D, TENV, Exn X, TyExn).
+
+    typing (Succ D, TENV, Raise E, T) 
+      = typing (D, TENV, E, TyExn).
+
+    typing (Succ D, TENV, Handle (E1,X,E2), T) 
+      = typing (D, TENV, E1, T), 
+        typing (D, (X,TyExn) :: TENV, E2, T).
+
+(* Value *)
+
+fun value : (depth, tyenv, valexp, ty)
+
+fun value (Succ D, TENV, Fix (F, TyFun (T1,T2), X, E), TyFun (T1,T2))
+      = typing (D, (X,T1) :: (F,TyFun (T1,T2)) :: TENV, E, T2).
+
+    value (Succ D, TENV, Unit, TyUnit).
+
+    value (Succ D, TENV, Tup (V1, V2), TyTup (T1,T2)) 
+      = value (D, TENV, V1, T1),
+        value (D, TENV, V2, T2).
+
+    value (Succ D, TENV, Nil, TyList T).
+
+    value (Succ D, TENV, Cons (V1,V2), TyList T)
+      = value (D, TENV, V1, T),
+        value (D, TENV, V2, TyList T).
+
+    value (Succ D, TENV, Exn X, TyExn).
+
+(* Example 
+
+CaseList (E, Raise (Exn "exn"), "H", "T", Nil)
+
+App (Fix ("f", "x", CaseList (Var "x", Raise (Exn "exn"), "h", "t", App (Var "f", Var "t"))), E)
+
+*)
+
+fun evalTypVal : (depth, exp, valexp, exp, ty)
+
+fun evalTypVal (D, E, V, G, TG) = value (D, [], G, TG), eval (D, [], E, V).
+
+fun query1 : (exp)
+
+fun query1 (G) = 
+      evalTypVal (
+        Succ (Succ (Succ (Succ (Succ Zero)))),
+        CaseList (G, Raise (Exn "exn"), "H", "T", TyList TyUnit, Nil),
+        Exn "exn",
+        G,
+        TyList TyUnit).
+
+fun query2 : (exp)
+
+fun query2 (G) = 
+      evalTypVal ( 
+            Succ (Succ (Succ (Succ (Succ (Succ Zero))))),
+            App (Fix ("f", TyFun (TyList TyUnit, TyUnit), "x", 
+                  CaseList (Var "x", Raise (Exn "exn"), 
+                                     "h", "t", TyList TyUnit, App (Var "f", Var "t"))), G),
+            Exn "exn",
+            G,
+            TyList TyUnit).

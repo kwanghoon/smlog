@@ -1,0 +1,18 @@
+
+fun op+ : ((int * int) : in, int : out)
+
+fun g : (int, int * int)
+
+fun g (X, (Y,Y)) = op+ ((X,1),Y).
+
+fun f : (int, int * (int * int))
+
+fun f (X, (X,Y)) = g (X,Y).
+
+(*
+fun K (X, F).
+     where fun F : (int, int)
+           fun F (Y, X).
+               F (Y, Y).
+     end
+*)

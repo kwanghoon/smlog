@@ -1,0 +1,376 @@
+
+fun print : (string : in)
+
+datatype num = Zero | Succ of num
+
+fun add : (num, num, num)
+
+fun add (Zero, Y, Y).
+    add (Succ X, Y, Succ Z) = add (X, Y, Z).
+
+fun add3 : (num, num, num, num)
+fun add3 (W,X,Y,Z) = add(V,Y,Z), add (W,X,V).
+
+fun prnum : (num)
+
+fun prnum (Zero) = print ("*\\n").
+    prnum (Succ D) = print ("*"), prnum (D).
+
+fun max : (num, num, num)
+
+fun max (Zero,   Zero,   Zero).
+    max (Zero,   Succ Y, Succ Y).
+    max (Succ X, Zero,   Succ X).
+    max (Succ X, Succ Y, Succ Z) = max (X, Y, Z).
+
+fun le : (num, num)
+
+fun le (Zero, Zero).
+    le (Zero, Succ X).
+    le (Succ X, Succ Y) = le (X,Y).
+
+(**********************************************************)
+
+type id = string
+
+datatype ty = 
+   TyFun  of ty * ty
+ | TyUnit
+ | TyTup  of ty * ty
+ | TyList of ty
+ | TyExn
+
+type tyenv = (id * ty) list
+
+type label = string
+
+datatype exp = 
+   Var      of id * label
+ | Fix      of id * ty * id * exp * label
+ | App      of exp * exp * label
+ | Unit     of label
+ | Tup      of exp * exp * label
+ | Nil      of label
+ | Cons     of exp * exp * label
+ | CaseList of exp * exp * (id * id * ty * exp) * label
+ | Exn      of label
+ | Raise    of exp * label
+ | Handle   of exp * exp * label
+
+datatype value =
+   ValClo  of (id * value) list * tyenv * (id * ty * id * exp) * label
+ | ValUnit of label
+ | ValTup  of value * value * label
+ | ValNil  of label
+ | ValCons of value * value * label
+ | ValExn  of label
+
+type env = (id * value) list
+
+
+(* Utility *)
+
+fun lookupEnv : (id, env, value)
+
+fun lookupEnv (X, (X,V)::ENV, V).
+    lookupEnv (X, (Y,W)::ENV, V) = lookupEnv (X, ENV, V).
+
+fun lookupTyEnv : (id, tyenv, ty)
+
+fun lookupTyEnv (X, (X,T)::ENV, T).
+    lookupTyEnv (X, (Y,S)::ENV, T) = lookupTyEnv (X, ENV, T).
+
+(* Typing *)
+
+type size = num
+type height = num
+
+fun typExp : (size, tyenv, exp, ty)
+fun typVal : (size, value, ty)
+fun typEnv : (size, env, tyenv)
+
+fun typExp (Zero, TENV, Var (X,L), T)
+      = lookupTyEnv (X, TENV, T).
+
+    typExp (Succ D, TENV, Fix (F, TyFun (T1,T2), X, E, L), TyFun (T1,T2))
+      = typExp (D, (X,T1) :: (F,TyFun (T1,T2)) :: TENV, E, T2).
+
+    typExp (Succ D, TENV, App (E1, E2, L), T2) 
+      = max (D1,D2,D),
+        typExp (D1, TENV, E1, TyFun (T1,T2)), 
+        typExp (D2, TENV, E2, T1).
+
+    typExp (Zero, TENV, Unit L, TyUnit).
+
+    typExp (Succ D, TENV, Tup (E1, E2, L), TyTup (T1,T2)) 
+      = max (D1,D2,D),
+        typExp (D1, TENV, E1, T1), 
+        typExp (D2, TENV, E2, T2).
+
+    typExp (Zero, TENV, Nil L, TyList T).
+
+    typExp (Succ D, TENV, Cons (E1,E2,L), TyList T) 
+      = max (D1,D2,D),
+        typExp (D1, TENV, E1, T), 
+        typExp (D2, TENV, E2, TyList T).
+
+    (* How to enforce the inequality of X and Y ? *)
+
+    typExp (Succ D, TENV, CaseList (E, E1, (X, Y, TyList T1, E2),L), T2)
+      = max (D1,D2,D4), max (D3,D4,D),
+        typExp (D1, TENV, E, TyList T1), 
+        typExp (D2, TENV, E1, T2), 
+        typExp (D3, (Y,TyList T1) :: (X,T1) :: TENV, E2, T2).  
+
+    typExp (Zero, TENV, Exn L, TyExn).
+
+    typExp (Succ D, TENV, Raise (E, L), T)
+      = typExp (D, TENV, E, TyExn).
+
+    typExp (Succ D, TENV, Handle (E1, E2, L), T)
+      = max (D1,D2,D),
+        typExp (D1, TENV, E1, T), 
+        typExp (D2, TENV, E2, T).
+
+(* Value *)
+
+and typVal (Succ D, ValClo (ENV, TENV, (F, TyFun (T1,T2), X, E), L), TyFun (T1,T2))
+      = max (D1,D2,D),
+        typEnv (D1, ENV, TENV),
+        typExp (D2, (X,T1) :: (F,TyFun (T1,T2)) :: TENV, E, T2).
+
+    typVal (Zero, ValUnit L, TyUnit).
+
+    typVal (Succ D, ValTup (V1, V2, L), TyTup (T1,T2)) 
+      = max (D1,D2,D),
+        typVal (D1, V1, T1),
+        typVal (D2, V2, T2).
+
+    typVal (Zero, ValNil L, TyList T).
+
+    typVal (Succ D, ValCons (V1, V2, L), TyList T)
+      = max (D1,D2,D),
+        typVal (D1, V1, T),
+        typVal (D2, V2, TyList T).
+
+    typVal (Zero, ValExn L, TyExn).
+
+(* Environment *)
+
+and typEnv (Zero, [], []).
+
+    typEnv (Succ D, (X,V)::ENV, (X,T)::TENV)
+      = max (D1, D2, D),
+        typVal (D1, V, T),
+        typEnv (D2, ENV, TENV).
+
+(* Enumerate typed values *)
+
+fun genEnv : (size, env, tyenv)
+fun enumTypVal : (num, size, value, ty)
+fun maxsize : (ty, size)
+
+fun genEnv (S, [], []).
+
+    genEnv (S, (X,V)::ENV, (X,T)::TENV)
+      = enumTypVal (S, Zero, V, T), genEnv (S, ENV, TENV).
+
+and enumTypVal (S, D, V, T)
+      = maxsize (T,D), le (D, S), typVal (D, V, T).
+
+    enumTypVal (S, D, V, T) 
+      = maxsize (T,D), le (D, S), enumTypVal (S, Succ D, V, T).
+
+and maxsize (TyFun (T1,T2), D).
+
+    maxsize (TyUnit,Zero).
+
+    maxsize (TyTup (T1,T2), Zero).
+
+    maxsize (TyTup (T1,T2), Succ D)
+      = max (D1,D2,D),
+        maxsize (T1,D1),
+        maxsize (T2,D2).
+
+    maxsize (TyList T, D).
+
+    maxsize (TyExn, Zero).
+
+(* Sequence of labels *)
+
+fun snoc : (label list, label, label list)
+
+fun snoc ([], L, [L]).
+
+    snoc (X::XS, L, X::YS) = snoc (XS, L, YS).
+
+fun state : (label, label list)
+
+fun state (X, X::XS).
+
+    state (X, Y::XS) = state (X, XS).
+
+fun transition : (label * label, label list)
+
+fun transition ((X1,X2), X1 :: X2 :: XS).
+
+    transition ((X1,X2), X :: XS) = transition ((X1,X2), XS).
+
+
+(* Evaluation *)
+
+fun eval : (height, env, exp, value, label list, label list)
+
+fun eval (Succ H, ENV, Var (X, L), V, L1, L2)
+      = snoc (L1, L, L2),
+        lookupEnv (X, ENV, V).
+         
+
+    eval (Succ H, ENV, Fix (F,T,X,E,L), ValClo(ENV, TENV, (F,T,X,E),L), L1, L2)
+      = snoc (L1, L, L2).
+
+    eval (Succ H, ENV, App (E1,E2,L), V, L1, L5)
+      = snoc (L1,L,L2),
+        eval (H, ENV, E1, ValClo (ENV0, TENV0, (F,T,X,E),L0),L2,L3),
+        eval (H, ENV, E2, V2,L3,L4),
+        eval (H, (X,V2) :: (F,ValClo (ENV0, TENV0, (F,T,X,E),L0)) :: ENV0, E, V,L4,L5).
+
+    eval (Succ H, ENV, Unit L, ValUnit L, L1, L2)
+      = snoc (L1,L,L2).
+
+    eval (Succ H, ENV, Tup (E1,E2,L), ValTup (V1,V2,L), L1, L4)
+      = snoc (L1, L, L2),
+        eval (H, ENV, E1, V1, L2, L3), 
+        eval (H, ENV, E2, V2, L3, L4).
+
+    eval (Succ H, ENV, Nil L, ValNil L, L1, L2)
+      = snoc (L1, L, L2).
+
+    eval (Succ H, ENV, Cons (E1,E2,L), ValCons (V1,V2,L), L1, L4)
+      = snoc (L1, L, L2),
+        eval (H, ENV, E1, V1, L2, L3), 
+        eval (H, ENV, E2, V2, L3, L4).
+
+    eval (Succ H, ENV, CaseList (E,E1,(X,Y,T,E2),L), V, L1, L4)
+      = snoc (L1, L, L2),
+        eval (H, ENV, E, ValNil L0, L2, L3),
+        eval (H, ENV, E1, V, L3, L4).
+
+    eval (Succ H, ENV, CaseList (E,E1,(X,Y,T,E2),L), V, L1, L4)
+      = snoc (L1, L, L2),
+        eval (H, ENV, E, ValCons (V1,V2,L0), L2, L3), 
+        eval (H, (Y,V2) :: (X,V1) :: ENV, E2, V, L3, L4).
+
+    eval (Succ H, ENV, Exn L, ValExn L, L1, L2)
+      = snoc (L1, L, L2).
+
+    eval (Succ H, ENV, Raise (E,L), ValExn L0, L1, L3)
+       = snoc (L1, L, L2),
+         eval (H, ENV, E, ValExn L0, L2, L3).
+
+    eval (Succ H, ENV, Handle (E1, E2, L), V, L1, L4)
+       = snoc (L1, L, L2),
+         eval (H, ENV, E1, ValExn L0, L2, L3), 
+         eval (H, ENV, E2, V, L3, L4).
+
+    eval (Succ H, ENV, Handle (E1, E2, L), 
+           V as (ValClo _ | ValUnit _ | ValNil _ | ValCons _), L1, L3)
+       = snoc (L1, L, L2),
+         eval (H, ENV, E1, V, L2, L3).
+
+(* Generating test data *)
+
+fun testdata : (size, height, tyenv, env, exp, value, label list, label list)
+
+fun testdata (D, H, TENV, ENV, E, V, L1, L2)
+      = genEnv (D,ENV,TENV),
+        eval (H,ENV,E,V,L1,L2).
+
+
+(* Example *)
+
+(***************************)
+(* Generate and test style *)
+(***************************)
+
+fun query1 : (num,num,value,label list)
+
+fun query1 (B,N,G,L2) = 
+      testdata (
+            B, N,
+            [("x", TyList TyUnit)],
+            [("x", G)],
+            CaseList (Var ("x", "l1"), Nil "l2", ("h", "t", TyList TyUnit, Var ("x","l3")), "l4"),
+            ValNil "l2",
+           [], 
+            L2).
+
+fun query2 : (num,num,value,label list)
+
+fun query2 (B,N,G,L2) = 
+      testdata (
+            B,N,
+            [("x", TyList TyUnit)],
+            [("x", G)],
+            App (Fix ("f", TyFun (TyList TyUnit,TyList TyUnit), "y", 
+                   CaseList (Var ("y","l1"), Nil "l2", 
+                            ("h", "t", TyList TyUnit, 
+                                  App (Var ("f", "l3"), Var ("t","l4"), "l5")), "l6"), "l9"),
+                 Var ("x","l7"), "l8"),
+            ValNil "l2",
+            [],
+            L2),
+            state ("l2",L2),
+            state ("l5",L2).
+
+
+(*****************************)
+(* Symbolic evaluation style *)
+(*****************************)
+
+(*
+fun query3 : (num,value)
+
+fun query3 (H,V) =
+      eval 
+      (
+            H,
+
+            [("x", V)],
+
+            App (
+
+              Fix ("f", TyFun (TyList TyUnit,TyList TyUnit), "y", 
+
+                CaseList (Var "y", 
+
+                  Nil, 
+
+                  ("h", "t", TyList TyUnit, App (Var "f", Var "t")))),
+
+              Var "x"),
+
+            ValCons (V1,V2)
+      ).
+
+fun query4 : (height,value)
+
+fun query4 (H,V) =
+      eval 
+      (
+            H,
+
+            [("x", V)],
+
+            App (
+
+              Fix ("f", TyFun (TyList (TyList TyUnit),TyList (TyList TyUnit)), "y",
+
+                 App (Var "x", Var "y")),
+
+              Cons (Nil, Cons (Cons (Unit,Nil), Nil))),
+
+            ValCons (ValCons (ValUnit,ValNil), ValCons (ValNil, ValNil))
+      ).
+
+*)

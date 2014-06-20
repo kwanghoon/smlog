@@ -1,0 +1,93 @@
+
+(* Random generation of data bound by a given depth *) 
+
+(* depth *)
+
+datatype depth = Z | S of depth
+
+(* utility *)
+
+fun member : (int, int list)
+
+fun member (X, X :: XS).
+    member (X, Y :: XS) = member (X, XS).
+
+(***********************)
+(* Generating integers *)
+(***********************)
+
+fun Int : (int)
+
+fun Int (X) = member (X, [3]).
+
+(********************)
+(* Generating lists *)
+(********************)
+
+fun List : (depth, int list)
+
+fun List (D, []).
+    List (S D, X :: XS) = Int (X), List (D, XS).
+
+fun genList : (int list)
+fun genList (X) = List (S (S (S Z)), X).
+
+(********************)
+(* Generating trees *)
+(********************)
+
+datatype tree = Leaf of int
+              | Node of tree * int * tree
+
+
+fun Tree : (depth, tree)
+
+fun Tree (D, Leaf X) = Int (X).
+    Tree (S D, Node (T1, X, T2)) = Tree (D, T1), Int (X), Tree (D, T2).
+
+
+fun genTree : (tree)
+
+fun genTree (T) = Tree (S (S (S Z)), T).
+
+(**************************)
+(* Generating typed terms *)
+(**************************)
+
+type id  = string
+ 
+datatype ty =
+    Int
+  | Fun  of ty * ty
+ 
+datatype term =
+    Var of id
+  | Const of int
+  | Lam of id * ty * term
+  | App of term * term
+ 
+type env = (id * ty) list
+ 
+fun lookup : (id, env, ty)
+
+fun lookup (X, (X,T)::E, T).
+    lookup (X, (Y,T)::E, T) = lookup (X, E, T).
+
+fun typing : (depth, env, term, ty)
+ 
+fun typing (D, E, Var X, T)                         (* var rule *)
+      = lookup (X, E, T).
+
+    typing (D, E, Const X, Int).                    (* int rule *)
+ 
+    typing (S D, E, Lam (X, T1, EX), Fun (T1, T2))  (* lam rule *)
+      = typing (D, (X,T1) :: E, EX, T2).
+ 
+    typing (S D, E, App (EX_fn, EX_arg), T2)        (* app rule *)
+      = typing (D, E, EX_fn, Fun (T1, T2)),
+        typing (D, E, EX_arg, T1).
+
+fun genTerm : (term, ty)
+
+fun genTerm (TERM, TYPE) = typing (S (S Z), [], TERM, TYPE).
+

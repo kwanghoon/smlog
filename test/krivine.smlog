@@ -1,0 +1,133 @@
+
+(***********************)
+(* Krivine type system *)
+(***********************)
+
+(* types and terms *)
+
+datatype ty = 
+         Int
+       | Fun of ty list * ty
+
+datatype term = 
+         Var of string
+       | App of term * term
+       | Lam of string * term
+
+type typingenv = (string * ty) list 
+
+type delta = ty list
+
+fun concat : (string list : in, string : out)
+
+fun toStr : (term, string)
+
+fun toStr (Var Y, Y).
+    toStr (Lam (X, M), Y') = 
+        toStr (M, Y),
+        concat  (["(", "lam ", X, ".", Y, ")"], Y').
+    toStr (App (M1,M2), Y') =
+        toStr (M1, S1),
+        toStr (M2, S2),
+        concat  (["(", S1, " ", S2, ")"], Y').
+
+(* typing judgments and typing derivation trees *)
+
+datatype judgment = J of typingenv * delta * term * ty
+
+datatype typingtree = 
+         VAR  of judgment 
+       | LAM  of typingtree * judgment
+       | CLO  of typingtree * judgment
+       | APP  of typingtree * typingtree * judgment
+       | CODE of typingtree * judgment
+
+
+fun ttToStr : (typingtree, string)
+
+fun ttToStr (VAR (J (_, _, _, _)), S) = concat (["VAR "], S).
+    ttToStr (LAM (T, J (_, _, _, _)), S) = ttToStr (T, S0), concat (["LAM ", "(", S0, ")"], S).
+    ttToStr (CLO (T, J (_, _, _, _)), S) = ttToStr (T, S0), concat (["CLO ", "(", S0, ")"], S).
+    ttToStr (CODE (T, J (_, _, _, _)), S) = ttToStr (T, S0), concat (["CODE ", "(", S0, ")"], S).
+    ttToStr (APP (T1, T2, J (_, _, _, _)), S) = ttToStr (T1, S1), ttToStr (T2, S2), concat (["APP ", "(", S1, ", ", S2, ")"], S).
+
+(* utility *)
+
+fun member : (typingenv, string, ty)
+
+fun member ( (X,T) :: E, X, T).
+    member ( _ :: E, X, T) = member (E, X, T).
+
+fun notEmpty : (ty list)
+
+fun notEmpty ( _ :: _).
+
+
+(* typing rules *)
+
+fun typing : (typingenv, ty list, term, ty, typingtree)
+
+fun typing (E, [], Var X, T, VAR (J (E, [], Var X, T)))
+       = member (E, X, T).
+
+    typing (E, T :: D, Lam (X,M), T', LAM (TT, J (E, T :: D, Lam (X,M), T')) )
+       = typing ((X,T) :: E, D, M, T', TT).
+
+    typing (E, [], Lam (X,M), Fun (D,T), CLO (TT, J (E, [], Lam (X,M), Fun (D,T))) ) 
+       = notEmpty (D), typing (E, D, Lam (X,M), T, TT).
+
+    typing (E, D, App (M1, M2), T1, APP (TT1, TT2, J (E, D, App (M1,M2), T1)) )
+       = typing (E, [], M2, T2, TT2), 
+         typing (E, T2 :: D, M1, T1, TT1).
+
+    typing (E, D, M, T, CODE (TT, J (E,D,M,T)) )
+       = notEmpty (D), 
+         typing (E, [], M, Fun (D, T), TT).
+
+(******************************************)
+(* Cps conversion based on Krivine typing *)
+(******************************************)
+
+fun shape : (delta, ty, term)
+
+fun shape ( [], T, Lam ("v", (Lam ("k", App (Var "k", Var "v"))))).
+    shape ( T :: D, T', Lam ("v", (Lam "a", ) 
+
+fun cps : (typingtree, term)
+
+fun cps ( VAR (J (_, _, Var X, _)),                Var X ).
+
+    cps ( LAM (T, J (_, _, Lam (X,M), _)),         Lam (X, M') )
+        = cps (T, M').
+
+    cps ( CLO (T, J (_, _, Lam (X,M), _)),         Lam ("k", App (Var "k", M')) )
+        = cps (T, M').
+
+    cps ( APP (T1, T2, J (_, _, App (M1,M2), _)),  App (M1', M2') )
+        = cps (T1, M1'),
+          cps (T2, M2').
+
+    cps ( CODE (T, J (_, _, M, _)),                App (M', Lam ("v", Var "v")) )
+        = cps (T, M').
+
+
+(********)
+(* main *)
+(********)
+
+fun test : (term, string, string, string)
+
+fun test (M, S1,S2, S3) = 
+     typing ([], [], M, T, TT), 
+
+     cps (TT, K), 
+
+     toStr (M, S1), 
+
+     ttToStr (TT, S2),
+
+     toStr (K, S3).
+
+fun run : (string, string, string)
+fun run (S1, S2, S3) =
+     test (Lam ("f", Lam ("x", Lam ("y", App (App (Var "f", Var "x"), Var "y")))), S1, S2, S3).

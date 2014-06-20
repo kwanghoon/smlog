@@ -1,0 +1,14 @@
+Reference
+
+* Mats Carlsson, 
+  On Implementing Prolog in functional programming, 
+  New Generation Computing, 2(4), 1984.
+
+* Conal Elliott and Frank Pfenning
+  A Semi-Functional Implementation of a Higher-Order Logic Programmming Language
+  1990
+
+* M. Spivey
+  Combinators for Breadth-First Search
+  Functional Pearl, Journal of Functional Programming
+

@@ -1,0 +1,11 @@
+
+
+
+
+
+fun f : (int : in, string : out)
+
+fun specf : (int, string)
+
+fun specf (I, S) = f (I, S).
+

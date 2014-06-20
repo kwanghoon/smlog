@@ -1,0 +1,62 @@
+
+(*
+   Send More Money problem
+
+   - SEND + MORE = MONEY
+   - S<>0, M <>0
+   - Every alphabet has a unique digit of 0 to 9.
+*)
+
+(*
+Solution (after more than one hour???)
+
+val it = Cons (["{D=7,E=5,M=1,N=6,O=0,R=8,S=9,Y=2}"],fn)
+  : Ostring list SMLOG.stream
+*)
+
+
+fun select : (int list, int, int list)
+
+fun select (X::XS, X, XS).
+    select (X::XS, Z, X::ZS) = select (XS, Z, ZS).
+
+fun perm : (int list, int list)
+
+fun perm ([], []).
+    perm (XS, Y::ZS) = select (XS, Y, YS), perm (YS, ZS).
+
+fun nonzero : (int : in, bool : out)
+
+(* fun nonzero n = n <> 0; *)
+
+fun toInt : (int list : in, int : out)
+
+(*
+fun toInt' [] = 0
+  | toInt' (x::xs) = x + toInt' xs * 10 ;
+
+fun toInt xs = toInt' (rev xs);
+*)
+
+fun add : (int : in, int : in, int : out)
+
+(* fun add (x,y) = x+y; *)
+
+fun eq : (int : in, int : in, bool : out)
+
+(* fun eq (x,y) = x=y; *)
+
+type Map = {S:int, E:int, N:int, D:int, M:int, O:int, R:int, Y:int}
+
+fun solve : (Map)
+
+fun solve ({S=S,E=E,N=N,D=D,M=M,O=O,R=R,Y=Y}) = 
+       perm ( [0,1,2,3,4,5,6,7,8,9], S :: E :: N :: D :: M :: O :: R :: Y :: LIST ),
+       nonzero (S,true),
+       nonzero (M,true),
+       toInt ([S,E,N,D], A1),
+       toInt ([M,O,R,E], A2),
+       toInt ([M,O,N,E,Y], A3),
+       add (A1, A2, A4),
+       eq (A3, A4, true).
+

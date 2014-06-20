@@ -1,0 +1,59 @@
+
+(*********************************)
+(* Krivine type inference system *)
+(*********************************)
+
+(* types and terms *)
+
+datatype ty = 
+         Int
+       | Fun of ty list * ty
+
+datatype term = 
+         Var of string
+       | App of term * term
+       | Lam of string * term
+
+type typingenv = (string * ty) list 
+
+type delta = ty list
+
+(* syntax-directed inference rules *)
+
+fun member : (typingenv, string, ty)
+
+fun member ( (X,T) :: E, X, T).
+    member ( _ :: E, X, T) = member (E, X, T).
+
+fun infer : (typingenv, delta, term, ty)
+
+fun infer (G, [], Var V, T)                      (* (var)   *)
+       = member (G, V, T).
+
+    infer (G, T :: D, Var V, T')                 (* (ins) followed by (var)   *)
+       = member (G, V, Fun (T :: D, T')).
+
+    infer (G, T :: D, Lam (V, M), T')            (* (abs)   *)
+       = infer ((V,T) :: G, D, M, T').
+
+    infer (G, [], Lam (V, M), Fun (T :: D, T'))  (* (clo)   *)
+       = infer ((V,T) :: G, D, M, T').
+
+    infer (G, D, App (M1, M2), T')               (* (app)   *)
+       = infer (G, [], M2, T),
+         infer (G, T :: D, M1, T').
+
+    infer (G, D, App (M1, M2), T')               (* (app) followed by (ins) in the left  *)
+       = infer (G, [], M2, T),
+         infer (G, [], M1, Fun (T :: D, T')).
+
+(*
+
+Samples
+
+App (Lam ("x",Lam ("y", Var "y")), (Lam ("z", (Var "z"))))
+
+Lam ("x", (Lam ("f",App (App (Var "f", Var "x"), Var "x"))))
+
+*)
+

@@ -1,0 +1,70 @@
+
+(* Temporal lambda calculus *)
+
+datatype temporalty = 
+         TInt 
+       | TFun of temporalty * temporalty 
+       | TO   of temporalty
+
+datatype temporalterm = 
+         TVar of string 
+       | TLam of string * temporalty * temporalterm 
+       | TApp of temporalterm * temporalterm
+       | TNext of temporalterm
+       | TPrev of temporalterm 
+
+datatype time = Z | S of time
+
+type temporaltypingenv = (string * temporalty * time) list
+
+fun member : (temporaltypingenv, string, temporalty, time)
+
+fun member ( (X,T,N) :: E, X, T, N).
+    member ( _ :: E, X, T, N) = member (E, X, T, N).
+
+fun temporaltyping : (temporaltypingenv, temporalterm, temporalty, time)
+
+fun temporaltyping (E, TVar X, T, N) 
+       = member (E, X, T, N).
+
+    temporaltyping (E, TLam (X,T,M), TFun (T,T'), N) 
+       = temporaltyping ((X,T,N) :: E, M, T', N).
+
+    temporaltyping (E, TApp (M1,M2), T, N)
+       = temporaltyping (E, M1, TFun (T2,T), N),
+         temporaltyping (E, M2, T2, N).
+
+    temporaltyping (E, TNext M, TO T, N)
+       = temporaltyping (E, M, T, S N).
+
+    temporaltyping (E, TPrev M, T, S N)
+       = temporaltyping (E, M, TO T, N).
+
+fun eval : (temporalterm, time, temporalterm) 
+
+fun eval (TLam (X,T,M), Z, TLam (X,T,M)).
+
+    eval (TApp (M1,M2), Z, M'') 
+       = eval (M1, Z, TLam (X,T,M)),
+         eval (M2, Z, V2),
+         subst (V2, X, M, M'),
+         eval (M', Z, M'').
+
+    eval (TVar X, S N, TVar X).
+
+    eval (TLam (X,T,M), S N, TLam (X,T,V))
+       = eval (M, S N, V).
+
+    eval (TApp (M1, M2), S N, TApp (V1, V2))
+       = eval (M1, V1),
+         eval (M2, V2).
+
+    eval (TNext M, N, TNext V)
+       = eval (M, S N, V).
+
+    eval (TPrev M, S Z, V)
+       = eval (M, Z, TNext V).
+
+    eval (TPrev M, S (S N), TPrev V)
+       = eval (M, S N, V).
+

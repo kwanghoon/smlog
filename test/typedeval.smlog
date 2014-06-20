@@ -1,0 +1,289 @@
+
+fun print : (string : in)
+
+datatype num = Zero | Succ of num
+
+fun add : (num, num, num)
+
+fun add (Zero, Y, Y).
+    add (Succ X, Y, Succ Z) = add (X, Y, Z).
+
+fun add3 : (num, num, num, num)
+
+fun add3 (W,X,Y,Z) = add(V,Y,Z), add (W,X,V).
+
+fun prnum : (num)
+fun prnum (Zero) = print ("*\\n").
+    prnum (Succ D) = print ("*"), prnum (D).
+
+fun max : (num, num, num)
+
+fun max (Zero,   Zero,   Zero).
+    max (Zero,   Succ Y, Succ Y).
+    max (Succ X, Zero,   Succ X).
+    max (Succ X, Succ Y, Succ Z) = max (X, Y, Z).
+
+fun le : (num, num)
+
+fun le (Zero, Zero).
+    le (Zero, Succ X).
+    le (Succ X, Succ Y) = le (X,Y).
+
+(**********************************************************)
+
+type id = string
+
+datatype ty = 
+   TyFun  of ty * ty
+ | TyUnit
+ | TyTup  of ty * ty
+ | TyList of ty
+ | TyExn
+
+type tyenv = (id * ty) list
+
+datatype exp =
+   Var      of id
+ | Fix      of id * ty * id * exp
+ | App      of exp * exp
+ | Unit
+ | Tup      of exp * exp
+ | Nil
+ | Cons     of exp * exp
+ | CaseList of exp * exp * (id * id * ty * exp)
+ | Exn      
+ | Raise    of exp
+ | Handle   of exp * exp
+
+datatype value =
+   ValClo  of (id * value) list * tyenv * (id * ty * id * exp)
+ | ValUnit
+ | ValTup  of value * value
+ | ValNil
+ | ValCons of value * value
+ | ValExn
+
+type env = (id * value) list
+
+
+(* Utility *)
+
+fun lookupEnv : (id, env, value)
+
+fun lookupEnv (X, (X,V)::ENV, V).
+    lookupEnv (X, (Y,W)::ENV, V) = lookupEnv (X, ENV, V).
+
+fun lookupTyEnv : (id, tyenv, ty)
+
+fun lookupTyEnv (X, (X,T)::ENV, T).
+    lookupTyEnv (X, (Y,S)::ENV, T) = lookupTyEnv (X, ENV, T).
+
+(* Typing *)
+
+type size = num
+type height = num
+
+fun typExp : (size, tyenv, exp, ty)
+fun typVal : (size, value, ty)
+fun typEnv : (size, env, tyenv)
+
+fun typExp (Zero, TENV, Var X, T)
+      = lookupTyEnv (X, TENV, T).
+
+    typExp (Succ D, TENV, Fix (F, TyFun (T1,T2), X, E), TyFun (T1,T2))
+      = typExp (D, (X,T1) :: (F,TyFun (T1,T2)) :: TENV, E, T2).
+
+    typExp (Succ D, TENV, App (E1, E2), T2) 
+      = max (D1,D2,D),
+        typExp (D1, TENV, E1, TyFun (T1,T2)), 
+        typExp (D2, TENV, E2, T1).
+
+    typExp (Zero, TENV, Unit, TyUnit).
+
+    typExp (Succ D, TENV, Tup (E1, E2), TyTup (T1,T2)) 
+      = max (D1,D2,D),
+        typExp (D1, TENV, E1, T1), 
+        typExp (D2, TENV, E2, T2).
+
+    typExp (Zero, TENV, Nil, TyList T).
+
+    typExp (Succ D, TENV, Cons (E1,E2), TyList T) 
+      = max (D1,D2,D),
+        typExp (D1, TENV, E1, T), 
+        typExp (D2, TENV, E2, TyList T).
+
+    (* How to enforce the inequality of X and Y ? *)
+
+    typExp (Succ D, TENV, CaseList (E, E1, (X, Y, TyList T1, E2)), T2)
+      = max (D1,D2,D4), max (D3,D4,D),
+        typExp (D1, TENV, E, TyList T1), 
+        typExp (D2, TENV, E1, T2), 
+        typExp (D3, (Y,TyList T1) :: (X,T1) :: TENV, E2, T2).  
+
+    typExp (Zero, TENV, Exn, TyExn).
+
+    typExp (Succ D, TENV, Raise E, T)
+      = typExp (D, TENV, E, TyExn).
+
+    typExp (Succ D, TENV, Handle (E1,E2), T)
+      = max (D1,D2,D),
+        typExp (D1, TENV, E1, T), 
+        typExp (D2, TENV, E2, T).
+
+(* Value *)
+
+and typVal (Succ D, ValClo (ENV, TENV, (F, TyFun (T1,T2), X, E)), TyFun (T1,T2))
+      = max (D1,D2,D),
+        typEnv (D1, ENV, TENV),
+        typExp (D2, (X,T1) :: (F,TyFun (T1,T2)) :: TENV, E, T2).
+
+    typVal (Zero, ValUnit, TyUnit).
+
+    typVal (Succ D, ValTup (V1, V2), TyTup (T1,T2)) 
+      = max (D1,D2,D),
+        typVal (D1, V1, T1),
+        typVal (D2, V2, T2).
+
+    typVal (Zero, ValNil, TyList T).
+
+    typVal (Succ D, ValCons (V1,V2), TyList T)
+      = max (D1,D2,D),
+        typVal (D1, V1, T),
+        typVal (D2, V2, TyList T).
+
+    typVal (Zero, ValExn, TyExn).
+
+(* Environment *)
+
+and typEnv (Zero, [], []).
+
+    typEnv (Succ D, (X,V)::ENV, (X,T)::TENV)
+      = max (D1, D2, D),
+        typVal (D1, V, T),
+        typEnv (D2, ENV, TENV).
+
+(* Enumerate typed values *)
+
+fun genEnv : (size, env, tyenv)
+fun enumTypVal : (num, size, value, ty)
+fun maxsize : (ty, size)
+
+fun genEnv (S, [], []).
+
+    genEnv (S, (X,V)::ENV, (X,T)::TENV)
+      = enumTypVal (S, Zero, V, T), genEnv (S, ENV, TENV).
+
+and enumTypVal (S, D, V, T)
+      = maxsize (T,D), le (D, S), typVal (D, V, T).
+
+    enumTypVal (S, D, V, T) 
+      = maxsize (T,D), le (D, S), enumTypVal (S, Succ D, V, T).
+
+and maxsize (TyFun (T1,T2), D).
+
+    maxsize (TyUnit,Zero).
+
+    maxsize (TyTup (T1,T2), Zero).
+
+    maxsize (TyTup (T1,T2), Succ D)
+      = max (D1,D2,D),
+        maxsize (T1,D1),
+        maxsize (T2,D2).
+
+    maxsize (TyList T, D).
+
+    maxsize (TyExn, Zero).
+
+(* Evaluation *)
+
+fun eval : (height, env, exp, value)
+
+fun eval (Succ H, ENV, Var X, V)
+      = lookupEnv (X, ENV, V). 
+
+    eval (Succ H, ENV, Fix (F,T,X,E), ValClo(ENV, TENV, (F,T,X,E))).
+
+    eval (Succ H, ENV, App (E1,E2), V)
+      = eval (H, ENV, E1, ValClo (ENV0, TENV0, (F,T,X,E))),
+        eval (H, ENV, E2, V2),
+        eval (H, (X,V2) :: (F,ValClo (ENV0, TENV0, (F,T,X,E))) :: ENV0, E, V).
+
+    eval (Succ H, ENV, Unit, ValUnit).
+
+    eval (Succ H, ENV, Tup (E1,E2), ValTup (V1,V2))
+      = eval (H, ENV, E1, V1), 
+        eval (H, ENV, E2, V2).
+
+    eval (Succ H, ENV, Nil, ValNil).
+
+    eval (Succ H, ENV, Cons (E1,E2), ValCons (V1,V2))
+      = eval (H, ENV, E1, V1), 
+        eval (H, ENV, E2, V2).
+
+    eval (Succ H, ENV, CaseList (E,E1,(X,Y,T,E2)), V)
+      = eval (H, ENV, E, ValNil),
+        eval (H, ENV, E1, V).
+
+    eval (Succ H, ENV, CaseList (E,E1,(X,Y,T,E2)), V)
+      = eval (H, ENV, E, ValCons (V1,V2)), 
+        eval (H, (Y,V2) :: (X,V1) :: ENV, E2, V).
+
+    eval (Succ H, ENV, Exn, ValExn).
+
+    eval (Succ H, ENV, Raise E, ValExn)
+       = eval (H, ENV, E, ValExn).
+
+    eval (Succ H, ENV, Handle (E1, E2), V)
+       = eval (H, ENV, E1, ValExn), 
+         eval (H, ENV, E2, V).
+
+    eval (Succ H, ENV, Handle (E1, E2), V as (ValClo _ | ValUnit | ValNil | ValCons _))
+       = eval (H, ENV, E1, V).
+
+
+(* Generating test data *)
+
+fun testdata : (size, height, tyenv, env, exp, value)
+
+fun testdata (D, H, TENV, ENV, E, V)
+      = genEnv (D,ENV,TENV),
+        eval (H,ENV,E,V).
+
+
+(* Example *)
+
+fun query1 : (num,num,value)
+
+fun query1 (B,N,G) = 
+      testdata (
+            B, N,
+            [("x", TyList TyUnit)],
+            [("x", G)],
+            CaseList (Var "x", Nil, ("h", "t", TyList TyUnit, Var "x")),
+            ValNil).
+
+fun query2 : (num,num,value)
+
+fun query2 (B,N,G) = 
+      testdata (
+            B,N,
+            [("x", TyList TyUnit)],
+            [("x", G)],
+            App (Fix ("f", TyFun (TyList TyUnit,TyList TyUnit), "y", 
+                        CaseList (Var "y", Nil, 
+                                           ("h", "t", TyList TyUnit, App (Var "f", Var "t")))),
+                 Var "x"),
+            ValNil).
+
+fun query3 : (num,num,value)
+
+fun query3 (B,N,G) =
+      testdata 
+      (
+            B,N,
+            [("x", TyFun (TyList (TyList TyUnit),TyList (TyList TyUnit)))],
+            [("x", G)],
+            App (Fix ("f", TyFun (TyList (TyList TyUnit),TyList (TyList TyUnit)), "y", App (Var "x", Var "y")),
+            Cons (Nil, Cons (Cons (Unit,Nil), Nil))),
+            ValCons (ValCons (ValUnit,ValNil), ValCons (ValNil, ValNil))
+      ).

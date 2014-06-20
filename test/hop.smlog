@@ -1,0 +1,29 @@
+
+datatype Term =
+
+     Var of string
+
+   | Lam of string * Term
+
+   | App of Term * Term
+
+datatype Predicate =
+
+     PVar of string
+
+   | PUniv of Predicate * Predicate
+
+fun member : (string, (string * Predicate) list, Predicate)
+
+fun member (X, (X,P) :: XPS, P).
+
+    member (X, (Y,_) :: XPS, P) = member (X, XPS, P).
+
+fun J : ((string * Predicate) list, Term, Predicate)
+
+fun J (ENV, Var X, P) = member (X, ENV, P).
+
+    J (ENV, Lam (X,E), PUniv (P1,P2)) = J ((X,P1)::ENV, E, P2).
+
+    J (ENV, App (E1,E2), P1) = J (ENV, E1, PUniv (P2,P1)), J (ENV, E2, P2).
+

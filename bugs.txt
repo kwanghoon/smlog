@@ -1,0 +1,6 @@
+
+lifting.sml
+liftTy
+Something wrong : unfoldSyn
+The reslut of unfoldSyn can be TupleTy, rather than ConTy.
+

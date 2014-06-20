@@ -1,0 +1,30 @@
+
+(* For functional syntax *)
+
+fun apply : (int -> int, int, int)
+
+fun apply (F, X, (F : int -> int) X).
+
+
+fun map : (int -> int, int list, int list)
+
+fun map (G, [], []).
+    map (G, X :: XS, (G : int -> int) X :: YS) = map (G, XS, YS).
+
+
+fun apply2 : (int -> int, int, int)
+
+fun apply2 (F, X, Z) = apply (F, X, Y), apply (F, Y, Z).
+
+
+fun apply3 : (int -> int, int, int)
+
+fun apply3 (F, X, Y) = apply (F, (F : int -> int) X, Y).
+
+
+(* pitfall *)
+
+fun apply4 : (int -> int, int, int)
+
+fun apply4 (F, X, (F : int -> int) Y) = apply (F, X, Y).
+

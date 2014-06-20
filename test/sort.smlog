@@ -1,0 +1,37 @@
+
+fun le : (int : in,int : in,bool : out)
+
+fun sort : (int list, int list)
+
+fun sort ([], []).
+    sort ([x], [x]).
+    sort (X :: XS, X :: (Y :: YS)) = sort (XS, Y::YS), le (X,Y,true).
+    sort (X :: XS, Y :: ZS) = sort (XS, Y::YS), le (X,Y,false), sort (X :: YS, ZS). 
+
+(*
+
+- Main.main "test/sort.smlog";
+val it = () : unit
+
+- fun le (x,y) = x<=y;
+val le = fn : int * int -> bool
+
+- use "sort.sml";
+
+- sort (SOME [9,1,5,4],NONE);
+
+val it = Cons ([],fn) : (Oint list option * Oint list option) list SMLOG.stream
+- SMLOG.nextS it;
+val it = Cons ([],fn) : (Oint list option * Oint list option) list SMLOG.stream
+- SMLOG.nextS it;
+
+....
+
+
+- SMLOG.nextS it;
+
+val it = Cons ([(SOME [9,1,5,4],SOME [1,4,5,9])],fn)
+  : (Oint list option * Oint list option) list SMLOG.stream
+
+*)
+

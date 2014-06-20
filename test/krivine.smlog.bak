@@ -1,0 +1,284 @@
+
+(***********************)
+(* Krivine type system *)
+(***********************)
+
+(* types and terms *)
+
+datatype ty = 
+         Int
+       | Fun of ty list * ty
+
+datatype term = 
+         Var of string
+       | App of term * term
+       | Lam of string * term
+
+type typingenv = (string * ty) list 
+
+type delta = ty list
+
+
+(* typing judgments and typing derivation trees *)
+
+datatype judgment = J of typingenv * delta * term * ty
+
+datatype typingtree = 
+         VAR  of judgment 
+       | LAM  of typingtree * judgment
+       | CLO  of typingtree * judgment
+       | APP  of typingtree * typingtree * judgment
+       | CODE of typingtree * judgment
+
+
+(* utility *)
+
+fun member : (typingenv, string, ty)
+
+fun member ( (X,T) :: E, X, T).
+    member ( _ :: E, X, T) = member (E, X, T).
+
+fun notEmpty : (ty list)
+
+fun notEmpty ( _ :: _).
+
+
+(* typing rules *)
+
+fun typing : (typingenv, ty list, term, ty, typingtree)
+
+fun typing (E, [], Var X, T, VAR (J (E, [], Var X, T)))
+       = member (E, X, T).
+
+    typing (E, T :: D, Lam (X,M), T', LAM (TT, J (E, T :: D, Lam (X,M), T')) )
+       = typing ((X,T) :: E, D, M, T', TT).
+
+    typing (E, [], Lam (X,M), Fun (D,T), CLO (TT, J (E, [], Lam (X,M), Fun (D,T))) ) 
+       = notEmpty (D), typing (E, D, Lam (X,M), T, TT).
+
+    typing (E, D, App (M1, M2), T1, APP (TT1, TT2, J (E, D, App (M1,M2), T1)) )
+       = typing (E, [], M2, T2, TT2), 
+         typing (E, T2 :: D, M1, T1, TT1).
+
+    typing (E, D, M, T, CODE (TT, J (E,D,M,T)) )
+       = notEmpty (D), 
+         typing (E, [], M, Fun (D, T), TT).
+
+(******************)
+(* cps conversion *)
+(******************)
+
+fun cps : (typingtree, term)
+
+fun cps ( VAR (J (E, D, Var X, T)), Var X ).
+
+    cps ( LAM (TT, J (E, D, Lam (X,M), T)), Lam (X, M') )
+        = cps (TT, M').
+
+    cps ( CLO (TT, J (E, D, Lam (X,M), T)), Lam ("K", App (Var "K", M')) )
+        = cps (TT, M').
+
+    cps ( APP (TT1, TT2, J (E, D, App (M1,M2), T)), App (M1', M2') )
+        = cps (TT1, M1'),
+          cps (TT2, M2').
+
+    cps ( CODE (TT, J (E, D, M, T)), App (M', Lam ("v", Var "v")) )
+        = cps (TT, M').
+
+
+(*****************************)
+(* Two-level lambda calculus *)
+(*****************************)
+
+(*
+datatype twolevelterm = 
+         TVar of string 
+
+       | SLam of string * twolevelterm 
+       | SApp of twolevelterm * twolevelterm
+
+       | DLam of string * twolevelterm 
+       | DApp of twolevelterm * twolevelterm
+
+type twoleveltypingenv = (string * twolevelty * time) list
+
+fun member' : (twoleveltypingenv, string, twolevelty, time)
+
+fun member' ( (X,T,N) :: E, X, T, N).
+    member' ( _ :: E, X, T, N) = member' (E, X, T, N).
+
+fun pr    : (twolevelterm)
+fun tostr : (twolevelterm, string)
+fun conc  : (string list : in, string : out)
+fun print : (string : in)
+
+fun pr (M) = tostr (M, X), print (X), print ("\\n--> ").
+
+and tostr (TVar Y, Y).
+    tostr (TLam (X, T, M), Y') = 
+        tostr (M, Y),
+        conc  (["(", "lam ", X, ".", Y, ")"], Y').
+    tostr (TApp (M1,M2), Y') =
+        tostr (M1, S1),
+        tostr (M2, S2),
+        conc  (["(", S1, " ", S2, ")"], Y').
+    tostr (TNext M, Y') =
+        tostr (M, Y),
+        conc  (["(", "next ", Y, ")"], Y').
+    tostr (TPrev M, Y') =
+        tostr (M, Y),
+        conc  (["(", "prev ", Y, ")"], Y').
+
+(*
+fun twoleveltyping : (twoleveltypingenv, twolevelterm, twolevelty, time)
+
+fun twoleveltyping (E, TVar X, T, N) 
+       = member' (E, X, T, N).
+
+    twoleveltyping (E, TLam (X,T,M), TFun (T,T'), N) 
+       = twoleveltyping ((X,T,N) :: E, M, T', N).
+
+    twoleveltyping (E, TApp (M1,M2), T, N)
+       = twoleveltyping (E, M1, TFun (T2,T), N),
+         twoleveltyping (E, M2, T2, N).
+
+    twoleveltyping (E, TNext M, TO T, N)
+       = twoleveltyping (E, M, T, S N).
+
+    twoleveltyping (E, TPrev M, T, S N)
+       = twoleveltyping (E, M, TO T, N).
+*)
+
+*)
+
+(**************)
+(* evaluation *)
+(**************)
+
+(*
+fun eval  : (twolevelterm, time, twolevelterm) 
+fun subst : (string, twolevelterm, twolevelterm, twolevelterm)
+fun eq    : (string : in, string : in, bool : out)
+
+fun eval (TLam (X,T,M), Z, TLam (X,T,M))
+       = pr (TLam (X,T,M)).
+
+    eval (TApp (M1,M2), Z, M'') 
+       = pr (TApp (M1,M2)),
+         eval (M1, Z, TLam (X,T,M)),
+         eval (M2, Z, V2),
+         subst (X, V2, M, M'),
+         eval (M', Z, M'').
+
+    eval (TVar X, S N, TVar X)
+       = pr (TVar X).
+
+    eval (TLam (X,T,M), S N, TLam (X,T,V))
+       = pr (TLam (X,T,M)),
+         eval (M, S N, V).
+
+    eval (TApp (M1, M2), S N, TApp (V1, V2))
+       = pr (TApp (M1, M2)),
+         eval (M1, S N, V1),
+         eval (M2, S N, V2).
+
+    eval (TPrev M, S Z, V)
+       = pr (TPrev M),
+         eval (M, Z, TNext V).
+
+    eval (TNext M, N, TNext V)
+       = pr (TNext M),
+         eval (M, S N, V).
+
+    eval (TPrev M, S (S N), TPrev V)
+       = pr (TPrev M),
+         eval (M, S N, V).
+
+
+and subst (X, V, TVar Y, V)
+        = eq (X,Y,true).
+
+    subst (X, V, TVar Y, TVar Y)
+        = eq (X,Y,false).
+
+    subst (X, V, TLam (Y, T, M), TLam (Y, T, M)) 
+        = eq (X,Y,true).
+
+    subst (X, V, TLam (Y, T, M), TLam (Y, T, M0))
+        = eq (X,Y,false),
+          subst (X, V, M, M0).
+
+    subst (X, V, TApp (M1, M2), TApp (M1',M2'))
+        = subst (X, V, M1, M1'),
+          subst (X, V, M2, M2').
+
+    subst (X, V, TNext M, TNext M0)
+        = subst (X, V, M, M0).
+
+    subst (X, V, TPrev M, TPrev M0)
+        = subst (X, V, M, M0).
+
+*)
+
+(********)
+(* main *)
+(********)
+
+fun run : (term, ty, string)
+
+(*
+fun run (M, T, S)
+        = typing ([], [], M, T, TT),
+          cps (TT, K),
+          pr (K, S).
+          reduce (K, K').
+*)
+
+fun test : (term)
+
+fun test (K) 
+    = 
+(*
+      typing ([("y",Int),("x",Int),("f", Fun ([Int,Int],Int))], 
+              [], 
+              App (App (Var "f", Var "x"), Var "y"), 
+              T, 
+              TT),
+*)
+      typing ([], [], Lam ("f", Lam ("x", Lam ("y", App (App (Var "f", Var "x"), Var "y")))), T, TT),
+      cps (TT, K)
+.
+
+(*
+,
+      eval (TApp (K, TLam ("x", TInt ,TVar "x")), Z, KK).
+*)
+
+(*
+
+[("y",Int),("x",Int),("f", Fun ([Int,Int],Int))]
+
+run (SOME (Lam ("f", Lam ("x", Lam ("y", )))), NONE, NONE);
+run (SOME (Lam ("f", Lam ("x", Lam ("y", App (App (Var "f", Var "x"), Var "y"))))), NONE, NONE);
+
+*)
+
+(*
+
+Auxiliary functions
+
+fun eq (x,y) = x=y;
+
+val freshK = let val r = ref 0
+             in  fn () => let val n = !r
+                          in  (r := !r + 1; "k" ^ Int.toString n)
+                          end
+             end
+
+val freshA = let val r = ref 0
+             in  fn () => let val n = !r
+                          in  (r := !r + 1; "a" ^ Int.toString n)
+                          end
+             end
+
+*)
