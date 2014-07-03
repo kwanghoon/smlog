@@ -8,12 +8,13 @@ structure ParserData=
 struct
 structure Header = 
 struct
-
+(*#line 1.2 "parser.grm"*)
 (* Parser *)
 
 open Ast AstUtil Type Identifier
 
 
+(*#line 17.1 "parser.grm.sml"*)
 end
 structure LrTable = Token.LrTable
 structure Token = Token
@@ -710,45 +711,7 @@ type pos = int
 type arg = unit
 structure MlyValue = 
 struct
-datatype svalue = VOID | ntVOID of unit ->  unit
- | AQID of unit ->  (string) | OBJL of unit ->  (string)
- | ENDQ of unit ->  (string) | CHAR of unit ->  (string)
- | STRING of unit ->  (string) | REAL of unit ->  (string)
- | WORD of unit ->  (int) | INT0 of unit ->  (int)
- | INT of unit ->  (int) | TYVAR of unit ->  (string)
- | ID of unit ->  (string) | int of unit ->  (int)
- | idclass of unit ->  (id) | qid of unit ->  (id list)
- | ident of unit ->  (id) | id of unit ->  (id)
- | tycon of unit ->  (id list) | selector of unit ->  (id)
- | elabels of unit ->  ( ( id * exp )  list)
- | elabel of unit ->  (id*exp) | exp_list of unit ->  (exp list)
- | exp_2c of unit ->  (exp list) | exp_ps of unit ->  (exp)
- | aexp of unit ->  (exp) | app_exp of unit ->  (exp list)
- | exp of unit ->  (exp) | plabel of unit ->  (id*pat)
- | plabels of unit ->  ( ( id * pat )  list*bool)
- | apats of unit ->  (pat list) | apat' of unit ->  (pat)
- | apat of unit ->  (pat) | or_pat_list of unit ->  (pat list)
- | pat_list of unit ->  (pat list) | pat of unit ->  (pat)
- | reldef of unit ->  (id*pat list)
- | reluse of unit ->  (path*exp list*id option)
- | reluses of unit ->  ( ( path * exp list * id option )  list)
- | relationdef of unit ->  (relation)
- | relationdefs of unit ->  (id*relation list)
- | rb of unit ->  (rb list) | tyvarseq of unit ->  (id list)
- | tyvar_pc of unit ->  (id list) | tyvars of unit ->  (id list)
- | tytuple of unit ->  (ty list)
- | tyrow' of unit ->  ( ( id * ty )  list)
- | tyrow of unit ->  ( ( id * ty )  list)
- | tyseq of unit ->  (ty list) | ty' of unit ->  (ty)
- | ty of unit ->  (ty) | inout of unit ->  (inout)
- | tyinout of unit ->  (ty*inout option)
- | tyinouts of unit ->  ( ( ty * inout option )  list)
- | relationtype of unit ->  (id* ( ty * inout option )  list)
- | op_op of unit ->  (unit) | constr of unit ->  (id*ty option)
- | constrs of unit ->  ( ( id * ty option )  list)
- | dbrhs of unit ->  (dbrhs) | db of unit ->  (db list)
- | tb of unit ->  (tb list) | decl of unit ->  (decl)
- | decls of unit ->  (decl list) | start of unit ->  (decl list)
+datatype svalue = VOID | ntVOID of unit ->  unit | AQID of unit ->  (string) | OBJL of unit ->  (string) | ENDQ of unit ->  (string) | CHAR of unit ->  (string) | STRING of unit ->  (string) | REAL of unit ->  (string) | WORD of unit ->  (int) | INT0 of unit ->  (int) | INT of unit ->  (int) | TYVAR of unit ->  (string) | ID of unit ->  (string) | int of unit ->  (int) | idclass of unit ->  (id) | qid of unit ->  (id list) | ident of unit ->  (id) | id of unit ->  (id) | tycon of unit ->  (id list) | selector of unit ->  (id) | elabels of unit ->  ( ( id * exp )  list) | elabel of unit ->  (id*exp) | exp_list of unit ->  (exp list) | exp_2c of unit ->  (exp list) | exp_ps of unit ->  (exp) | aexp of unit ->  (exp) | app_exp of unit ->  (exp list) | exp of unit ->  (exp) | plabel of unit ->  (id*pat) | plabels of unit ->  ( ( id * pat )  list*bool) | apats of unit ->  (pat list) | apat' of unit ->  (pat) | apat of unit ->  (pat) | or_pat_list of unit ->  (pat list) | pat_list of unit ->  (pat list) | pat of unit ->  (pat) | reldef of unit ->  (id*pat list) | reluse of unit ->  (path*exp list*id option) | reluses of unit ->  ( ( path * exp list * id option )  list) | relationdef of unit ->  (relation) | relationdefs of unit ->  (id*relation list) | rb of unit ->  (rb list) | tyvarseq of unit ->  (id list) | tyvar_pc of unit ->  (id list) | tyvars of unit ->  (id list) | tytuple of unit ->  (ty list) | tyrow' of unit ->  ( ( id * ty )  list) | tyrow of unit ->  ( ( id * ty )  list) | tyseq of unit ->  (ty list) | ty' of unit ->  (ty) | ty of unit ->  (ty) | inout of unit ->  (inout) | tyinout of unit ->  (ty*inout option) | tyinouts of unit ->  ( ( ty * inout option )  list) | relationtype of unit ->  (id* ( ty * inout option )  list) | op_op of unit ->  (unit) | constr of unit ->  (id*ty option) | constrs of unit ->  ( ( id * ty option )  list) | dbrhs of unit ->  (dbrhs) | db of unit ->  (db list) | tb of unit ->  (tb list) | decl of unit ->  (decl) | decls of unit ->  (decl list) | start of unit ->  (decl list)
 end
 type svalue = MlyValue.svalue
 type result = decl list
@@ -756,9 +719,11 @@ end
 structure EC=
 struct
 open LrTable
+infix 5 $$
+fun x $$ y = y::x
 val is_keyword =
 fn _ => false
-val preferred_change = 
+val preferred_change : (term list * term list) list = 
 nil
 val noShift = 
 fn (T 0) => true | _ => false
@@ -846,17 +811,8 @@ local open Header in
 val errtermvalue=
 fn _ => MlyValue.VOID
 end
-val terms = (T 0) :: (T 1) :: (T 10) :: (T 11) :: (T 12) :: (T 13) :: 
-(T 14) :: (T 15) :: (T 16) :: (T 17) :: (T 18) :: (T 19) :: (T 20) :: 
-(T 21) :: (T 22) :: (T 23) :: (T 24) :: (T 25) :: (T 26) :: (T 27) :: 
-(T 28) :: (T 29) :: (T 30) :: (T 31) :: (T 32) :: (T 33) :: (T 34) :: 
-(T 35) :: (T 36) :: (T 37) :: (T 38) :: (T 39) :: (T 40) :: (T 41) :: 
-(T 42) :: (T 43) :: (T 44) :: (T 45) :: (T 46) :: (T 47) :: (T 48) :: 
-(T 49) :: (T 50) :: (T 51) :: (T 52) :: (T 53) :: (T 54) :: (T 55) :: 
-(T 56) :: (T 57) :: (T 58) :: (T 59) :: (T 60) :: (T 61) :: (T 62) :: 
-(T 63) :: (T 64) :: (T 65) :: (T 66) :: (T 67) :: (T 68) :: (T 69) :: 
-(T 70) :: (T 71) :: (T 72) :: (T 73) :: (T 74) :: nil
-end
+val terms : term list = nil
+ $$ (T 74) $$ (T 73) $$ (T 72) $$ (T 71) $$ (T 70) $$ (T 69) $$ (T 68) $$ (T 67) $$ (T 66) $$ (T 65) $$ (T 64) $$ (T 63) $$ (T 62) $$ (T 61) $$ (T 60) $$ (T 59) $$ (T 58) $$ (T 57) $$ (T 56) $$ (T 55) $$ (T 54) $$ (T 53) $$ (T 52) $$ (T 51) $$ (T 50) $$ (T 49) $$ (T 48) $$ (T 47) $$ (T 46) $$ (T 45) $$ (T 44) $$ (T 43) $$ (T 42) $$ (T 41) $$ (T 40) $$ (T 39) $$ (T 38) $$ (T 37) $$ (T 36) $$ (T 35) $$ (T 34) $$ (T 33) $$ (T 32) $$ (T 31) $$ (T 30) $$ (T 29) $$ (T 28) $$ (T 27) $$ (T 26) $$ (T 25) $$ (T 24) $$ (T 23) $$ (T 22) $$ (T 21) $$ (T 20) $$ (T 19) $$ (T 18) $$ (T 17) $$ (T 16) $$ (T 15) $$ (T 14) $$ (T 13) $$ (T 12) $$ (T 11) $$ (T 10) $$ (T 1) $$ (T 0)end
 structure Actions =
 struct 
 exception mlyAction of int
@@ -865,903 +821,922 @@ val actions =
 fn (i392,defaultPos,stack,
     (()):arg) =>
 case (i392,stack)
-of (0,(_,(MlyValue.decls decls1,decls1left,decls1right))::rest671) => 
-let val result=MlyValue.start(fn _ => let val decls as decls1=decls1 
-()
- in ( decls ) end
+of  ( 0, ( ( _, ( MlyValue.decls decls1, decls1left, decls1right)) :: rest671)) => let val  result = MlyValue.start (fn _ => let val  (decls as decls1) = decls1 ()
+ in ((*#line 105.17 "parser.grm"*) decls (*#line 824.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 0,(result,decls1left,decls1right),rest671) end
-| (1,(_,(MlyValue.decls decls1,_,decls1right))::(_,(MlyValue.decl 
-decl1,decl1left,_))::rest671) => let val result=MlyValue.decls(fn _
- => let val decl as decl1=decl1 ()
-val decls as decls1=decls1 ()
- in ( decl :: decls ) end
+end)
+ in ( LrTable.NT 0, ( result, decls1left, decls1right), rest671)
+end
+|  ( 1, ( ( _, ( MlyValue.decls decls1, _, decls1right)) :: ( _, ( MlyValue.decl decl1, decl1left, _)) :: rest671)) => let val  result = MlyValue.decls (fn _ => let val  (decl as decl1) = decl1 ()
+ val  (decls as decls1) = decls1 ()
+ in ((*#line 107.22 "parser.grm"*) decl :: decls (*#line 830.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 1,(result,decl1left,decls1right),rest671) end
-| (2,rest671) => let val result=MlyValue.decls(fn _ => ( [] ))
- in (LrTable.NT 1,(result,defaultPos,defaultPos),rest671) end
-| (3,(_,(MlyValue.rb rb1,_,rb1right))::(_,(_,FUN1left,_))::rest671)
- => let val result=MlyValue.decl(fn _ => let val rb as rb1=rb1 ()
- in ( RelationDec (rb,[]) ) end
+end)
+ in ( LrTable.NT 1, ( result, decl1left, decls1right), rest671)
+end
+|  ( 2, ( rest671)) => let val  result = MlyValue.decls (fn _ => ((*#line 108.22 "parser.grm"*) [] (*#line 837.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 1, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 3, ( ( _, ( MlyValue.rb rb1, _, rb1right)) :: ( _, ( _, FUN1left, _)) :: rest671)) => let val  result = MlyValue.decl (fn _ => let val  (rb as rb1) = rb1 ()
+ in ((*#line 110.26 "parser.grm"*) RelationDec (rb,[]) (*#line 841.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 2,(result,FUN1left,rb1right),rest671) end
-| (4,(_,(MlyValue.rb rb1,_,rb1right))::(_,(MlyValue.tyvarseq tyvarseq1
-,_,_))::(_,(_,FUN1left,_))::rest671) => let val result=MlyValue.decl(
-fn _ => let val tyvarseq as tyvarseq1=tyvarseq1 ()
-val rb as rb1=rb1 ()
- in ( RelationDec (rb,tyvarseq) ) end
+end)
+ in ( LrTable.NT 2, ( result, FUN1left, rb1right), rest671)
+end
+|  ( 4, ( ( _, ( MlyValue.rb rb1, _, rb1right)) :: ( _, ( MlyValue.tyvarseq tyvarseq1, _, _)) :: ( _, ( _, FUN1left, _)) :: rest671)) => let val  result = MlyValue.decl (fn _ => let val  (tyvarseq as tyvarseq1) = tyvarseq1 ()
+ val  (rb as rb1) = rb1 ()
+ in ((*#line 111.26 "parser.grm"*) RelationDec (rb,tyvarseq) (*#line 847.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 2,(result,FUN1left,rb1right),rest671) end
-| (5,(_,(MlyValue.relationtype relationtype1,_,relationtype1right))::(
-_,(_,FUN1left,_))::rest671) => let val result=MlyValue.decl(fn _ => 
-let val relationtype as relationtype1=relationtype1 ()
- in ( RelationSigDec relationtype ) end
+end)
+ in ( LrTable.NT 2, ( result, FUN1left, rb1right), rest671)
+end
+|  ( 5, ( ( _, ( MlyValue.relationtype relationtype1, _, relationtype1right)) :: ( _, ( _, FUN1left, _)) :: rest671)) => let val  result = MlyValue.decl (fn _ => let val  (relationtype as relationtype1) = relationtype1 ()
+ in ((*#line 113.30 "parser.grm"*) RelationSigDec relationtype (*#line 854.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 2,(result,FUN1left,relationtype1right),rest671) end
-| (6,(_,(MlyValue.db db1,_,db1right))::(_,(_,DATATYPE1left,_))::
-rest671) => let val result=MlyValue.decl(fn _ => let val db as db1=db1
- ()
- in ( DatatypeDec (db, NONE) ) end
+end)
+ in ( LrTable.NT 2, ( result, FUN1left, relationtype1right), rest671)
+end
+|  ( 6, ( ( _, ( MlyValue.db db1, _, db1right)) :: ( _, ( _, DATATYPE1left, _)) :: rest671)) => let val  result = MlyValue.decl (fn _ => let val  (db as db1) = db1 ()
+ in ((*#line 116.13 "parser.grm"*) DatatypeDec (db, NONE) (*#line 860.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 2,(result,DATATYPE1left,db1right),rest671) end
-| (7,(_,(MlyValue.tb tb1,_,tb1right))::_::(_,(MlyValue.db db1,_,_))::(
-_,(_,DATATYPE1left,_))::rest671) => let val result=MlyValue.decl(fn _
- => let val db as db1=db1 ()
-val tb as tb1=tb1 ()
- in ( DatatypeDec (db, SOME tb) ) end
+end)
+ in ( LrTable.NT 2, ( result, DATATYPE1left, db1right), rest671)
+end
+|  ( 7, ( ( _, ( MlyValue.tb tb1, _, tb1right)) :: _ :: ( _, ( MlyValue.db db1, _, _)) :: ( _, ( _, DATATYPE1left, _)) :: rest671)) => let val  result = MlyValue.decl (fn _ => let val  (db as db1) = db1 ()
+ val  (tb as tb1) = tb1 ()
+ in ((*#line 118.13 "parser.grm"*) DatatypeDec (db, SOME tb) (*#line 866.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 2,(result,DATATYPE1left,tb1right),rest671) end
-| (8,(_,(MlyValue.tb tb1,_,tb1right))::(_,(_,TYPE1left,_))::rest671)
- => let val result=MlyValue.decl(fn _ => let val tb as tb1=tb1 ()
- in ( TypeDec tb ) end
+end)
+ in ( LrTable.NT 2, ( result, DATATYPE1left, tb1right), rest671)
+end
+|  ( 8, ( ( _, ( MlyValue.tb tb1, _, tb1right)) :: ( _, ( _, TYPE1left, _)) :: rest671)) => let val  result = MlyValue.decl (fn _ => let val  (tb as tb1) = tb1 ()
+ in ((*#line 120.13 "parser.grm"*) TypeDec tb (*#line 873.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 2,(result,TYPE1left,tb1right),rest671) end
-| (9,(_,(MlyValue.rb rb2,_,rb2right))::_::(_,(MlyValue.rb rb1,rb1left,
-_))::rest671) => let val result=MlyValue.rb(fn _ => let val rb1=rb1 ()
-val rb2=rb2 ()
- in ( rb1 @ rb2 ) end
+end)
+ in ( LrTable.NT 2, ( result, TYPE1left, tb1right), rest671)
+end
+|  ( 9, ( ( _, ( MlyValue.rb rb2, _, rb2right)) :: _ :: ( _, ( MlyValue.rb rb1, rb1left, _)) :: rest671)) => let val  result = MlyValue.rb (fn _ => let val  rb1 = rb1 ()
+ val  rb2 = rb2 ()
+ in ((*#line 124.21 "parser.grm"*) rb1 @ rb2 (*#line 879.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 22,(result,rb1left,rb2right),rest671) end
-| (10,(_,(MlyValue.relationdefs relationdefs1,relationdefs1left,
-relationdefs1right))::rest671) => let val result=MlyValue.rb(fn _ => 
-let val relationdefs as relationdefs1=relationdefs1 ()
- in (
- case relationdefs of (id, relations) => 
-               [Rb (id,relations,true)] 
-) end
+end)
+ in ( LrTable.NT 22, ( result, rb1left, rb2right), rest671)
+end
+|  ( 10, ( ( _, ( MlyValue.relationdefs relationdefs1, relationdefs1left, relationdefs1right)) :: rest671)) => let val  result = MlyValue.rb (fn _ => let val  (relationdefs as relationdefs1) = relationdefs1 ()
+ in ((*#line 126.13 "parser.grm"*) case relationdefs of (id, relations) => 
+               [Rb (id,relations,true)] (*#line 886.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 22,(result,relationdefs1left,relationdefs1right),
-rest671) end
-| (11,(_,(MlyValue.relationdefs relationdefs1,_,relationdefs1right))::
-(_,(MlyValue.relationdef relationdef1,relationdef1left,_))::rest671)
- => let val result=MlyValue.relationdefs(fn _ => let val relationdef
- as relationdef1=relationdef1 ()
-val relationdefs as relationdefs1=relationdefs1 ()
- in (
- case (relationdef, relationdefs) of
+end)
+ in ( LrTable.NT 22, ( result, relationdefs1left, relationdefs1right), rest671)
+end
+|  ( 11, ( ( _, ( MlyValue.relationdefs relationdefs1, _, relationdefs1right)) :: ( _, ( MlyValue.relationdef relationdef1, relationdef1left, _)) :: rest671)) => let val  result = MlyValue.relationdefs (fn _ => let val  (relationdef as relationdef1) = relationdef1 ()
+ val  (relationdefs as relationdefs1) = relationdefs1 ()
+ in ((*#line 131.12 "parser.grm"*) case (relationdef, relationdefs) of
               (Relation {name=id,...},
-               (_,relationdefs')) => (id, relationdef :: relationdefs') 
-) end
-)
- in (LrTable.NT 23,(result,relationdef1left,relationdefs1right),
-rest671) end
-| (12,(_,(MlyValue.relationdef relationdef1,relationdef1left,
-relationdef1right))::rest671) => let val result=MlyValue.relationdefs(
-fn _ => let val relationdef as relationdef1=relationdef1 ()
- in (
- case relationdef of 
-              Relation {name=id,...} => (id, [relationdef]) 
-) end
-)
- in (LrTable.NT 23,(result,relationdef1left,relationdef1right),rest671
-) end
-| (13,(_,(MlyValue.ty ty1,_,ty1right))::_::(_,(MlyValue.idclass 
-idclass1,_,_))::(_,(MlyValue.tyvars tyvars1,tyvars1left,_))::rest671)
- => let val result=MlyValue.tb(fn _ => let val tyvars as tyvars1=
-tyvars1 ()
-val idclass as idclass1=idclass1 ()
-val ty as ty1=ty1 ()
- in ( [Tb {tyc=idclass, tyvars=tyvars, def=ty}] ) end
-)
- in (LrTable.NT 3,(result,tyvars1left,ty1right),rest671) end
-| (14,(_,(MlyValue.tb tb2,_,tb2right))::_::(_,(MlyValue.tb tb1,tb1left
-,_))::rest671) => let val result=MlyValue.tb(fn _ => let val tb1=tb1 
-()
-val tb2=tb2 ()
- in ( tb1 @ tb2 ) end
-)
- in (LrTable.NT 3,(result,tb1left,tb2right),rest671) end
-| (15,(_,(MlyValue.db db2,_,db2right))::_::(_,(MlyValue.db db1,db1left
-,_))::rest671) => let val result=MlyValue.db(fn _ => let val db1=db1 
-()
-val db2=db2 ()
- in ( db1 @ db2 ) end
-)
- in (LrTable.NT 4,(result,db1left,db2right),rest671) end
-| (16,(_,(MlyValue.dbrhs dbrhs1,_,dbrhs1right))::_::(_,(MlyValue.ident
- ident1,_,_))::(_,(MlyValue.tyvars tyvars1,tyvars1left,_))::rest671)
- => let val result=MlyValue.db(fn _ => let val tyvars as tyvars1=
-tyvars1 ()
-val ident as ident1=ident1 ()
-val dbrhs as dbrhs1=dbrhs1 ()
- in ( [Db {tyc=ident, tyvars=tyvars, rhs=dbrhs}] ) end
-)
- in (LrTable.NT 4,(result,tyvars1left,dbrhs1right),rest671) end
-| (17,(_,(MlyValue.constrs constrs1,constrs1left,constrs1right))::
-rest671) => let val result=MlyValue.dbrhs(fn _ => let val constrs as 
-constrs1=constrs1 ()
- in ( Constrs constrs ) end
-)
- in (LrTable.NT 5,(result,constrs1left,constrs1right),rest671) end
-| (18,(_,(MlyValue.tycon tycon1,_,tycon1right))::(_,(_,DATATYPE1left,_
-))::rest671) => let val result=MlyValue.dbrhs(fn _ => let val tycon
- as tycon1=tycon1 ()
- in ( Repl tycon ) end
-)
- in (LrTable.NT 5,(result,DATATYPE1left,tycon1right),rest671) end
-| (19,(_,(MlyValue.constr constr1,constr1left,constr1right))::rest671)
- => let val result=MlyValue.constrs(fn _ => let val constr as constr1=
-constr1 ()
- in ( [constr] ) end
-)
- in (LrTable.NT 6,(result,constr1left,constr1right),rest671) end
-| (20,(_,(MlyValue.constrs constrs1,_,constrs1right))::_::(_,(
-MlyValue.constr constr1,constr1left,_))::rest671) => let val result=
-MlyValue.constrs(fn _ => let val constr as constr1=constr1 ()
-val constrs as constrs1=constrs1 ()
- in ( constr :: constrs ) end
-)
- in (LrTable.NT 6,(result,constr1left,constrs1right),rest671) end
-| (21,(_,(MlyValue.ident ident1,_,ident1right))::(_,(MlyValue.op_op 
-op_op1,op_op1left,_))::rest671) => let val result=MlyValue.constr(fn _
- => let val op_op1=op_op1 ()
-val ident as ident1=ident1 ()
- in ( (ident, NONE) ) end
-)
- in (LrTable.NT 7,(result,op_op1left,ident1right),rest671) end
-| (22,(_,(MlyValue.ty ty1,_,ty1right))::_::(_,(MlyValue.ident ident1,_
-,_))::(_,(MlyValue.op_op op_op1,op_op1left,_))::rest671) => let val 
-result=MlyValue.constr(fn _ => let val op_op1=op_op1 ()
-val ident as ident1=ident1 ()
-val ty as ty1=ty1 ()
- in ( (ident, SOME ty) ) end
-)
- in (LrTable.NT 7,(result,op_op1left,ty1right),rest671) end
-| (23,(_,(_,OP1left,OP1right))::rest671) => let val result=
-MlyValue.op_op(fn _ => ())
- in (LrTable.NT 8,(result,OP1left,OP1right),rest671) end
-| (24,rest671) => let val result=MlyValue.op_op(fn _ => ())
- in (LrTable.NT 8,(result,defaultPos,defaultPos),rest671) end
-| (25,(_,(_,_,RPAREN1right))::(_,(MlyValue.tyinouts tyinouts1,_,_))::_
-::_::(_,(MlyValue.ident ident1,ident1left,_))::rest671) => let val 
-result=MlyValue.relationtype(fn _ => let val ident as ident1=ident1 ()
-val tyinouts as tyinouts1=tyinouts1 ()
- in ( (ident, tyinouts ) ) end
-)
- in (LrTable.NT 9,(result,ident1left,RPAREN1right),rest671) end
-| (26,(_,(_,_,RPAREN1right))::(_,(MlyValue.tyinouts tyinouts1,_,_))::_
-::_::(_,(MlyValue.ident ident1,_,_))::(_,(_,OP1left,_))::rest671) => 
-let val result=MlyValue.relationtype(fn _ => let val ident as ident1=
-ident1 ()
-val tyinouts as tyinouts1=tyinouts1 ()
- in ( ("op" ^ ident, tyinouts ) ) end
-)
- in (LrTable.NT 9,(result,OP1left,RPAREN1right),rest671) end
-| (27,(_,(MlyValue.tyinouts tyinouts1,_,tyinouts1right))::_::(_,(
-MlyValue.tyinout tyinout1,tyinout1left,_))::rest671) => let val result
-=MlyValue.tyinouts(fn _ => let val tyinout as tyinout1=tyinout1 ()
-val tyinouts as tyinouts1=tyinouts1 ()
- in ( tyinout :: tyinouts ) end
-)
- in (LrTable.NT 10,(result,tyinout1left,tyinouts1right),rest671) end
-| (28,(_,(MlyValue.tyinout tyinout1,tyinout1left,tyinout1right))::
-rest671) => let val result=MlyValue.tyinouts(fn _ => let val tyinout
- as tyinout1=tyinout1 ()
- in ( [tyinout] ) end
-)
- in (LrTable.NT 10,(result,tyinout1left,tyinout1right),rest671) end
-| (29,(_,(MlyValue.inout inout1,_,inout1right))::_::(_,(MlyValue.ty 
-ty1,ty1left,_))::rest671) => let val result=MlyValue.tyinout(fn _ => 
-let val ty as ty1=ty1 ()
-val inout as inout1=inout1 ()
- in ( (ty, SOME inout) ) end
-)
- in (LrTable.NT 11,(result,ty1left,inout1right),rest671) end
-| (30,(_,(MlyValue.ty ty1,ty1left,ty1right))::rest671) => let val 
-result=MlyValue.tyinout(fn _ => let val ty as ty1=ty1 ()
- in ( (ty, NONE) ) end
-)
- in (LrTable.NT 11,(result,ty1left,ty1right),rest671) end
-| (31,(_,(_,IN1left,IN1right))::rest671) => let val result=
-MlyValue.inout(fn _ => ( IN  ))
- in (LrTable.NT 12,(result,IN1left,IN1right),rest671) end
-| (32,(_,(_,OUT1left,OUT1right))::rest671) => let val result=
-MlyValue.inout(fn _ => ( OUT ))
- in (LrTable.NT 12,(result,OUT1left,OUT1right),rest671) end
-| (33,(_,(MlyValue.tytuple tytuple1,tytuple1left,tytuple1right))::
-rest671) => let val result=MlyValue.ty(fn _ => let val tytuple as 
-tytuple1=tytuple1 ()
- in ( TupleTy tytuple ) end
-)
- in (LrTable.NT 13,(result,tytuple1left,tytuple1right),rest671) end
-| (34,(_,(MlyValue.ty ty2,_,ty2right))::_::(_,(MlyValue.ty ty1,ty1left
-,_))::rest671) => let val result=MlyValue.ty(fn _ => let val ty1=ty1 
-()
-val ty2=ty2 ()
- in ( ConTy ([arrowTycon], [ty1,ty2]) ) end
-)
- in (LrTable.NT 13,(result,ty1left,ty2right),rest671) end
-| (35,(_,(MlyValue.ty' ty'1,ty'1left,ty'1right))::rest671) => let val 
-result=MlyValue.ty(fn _ => let val ty' as ty'1=ty'1 ()
- in ( ty' ) end
-)
- in (LrTable.NT 13,(result,ty'1left,ty'1right),rest671) end
-| (36,(_,(_,_,RBRACE1right))::(_,(MlyValue.tyrow tyrow1,_,_))::(_,(_,
-LBRACE1left,_))::rest671) => let val result=MlyValue.ty'(fn _ => let 
-val tyrow as tyrow1=tyrow1 ()
- in ( RecordTy (Util.sortLabels tyrow) ) end
-)
- in (LrTable.NT 14,(result,LBRACE1left,RBRACE1right),rest671) end
-| (37,(_,(_,_,RPAREN1right))::(_,(MlyValue.ty ty1,_,_))::(_,(_,
-LPAREN1left,_))::rest671) => let val result=MlyValue.ty'(fn _ => let 
-val ty as ty1=ty1 ()
- in ( ty ) end
-)
- in (LrTable.NT 14,(result,LPAREN1left,RPAREN1right),rest671) end
-| (38,(_,(MlyValue.tycon tycon1,tycon1left,tycon1right))::rest671) => 
-let val result=MlyValue.ty'(fn _ => let val tycon as tycon1=tycon1 ()
- in ( ConTy (tycon, []) ) end
-)
- in (LrTable.NT 14,(result,tycon1left,tycon1right),rest671) end
-| (39,(_,(MlyValue.tycon tycon1,_,tycon1right))::(_,(MlyValue.ty' ty'1
-,ty'1left,_))::rest671) => let val result=MlyValue.ty'(fn _ => let 
-val ty' as ty'1=ty'1 ()
-val tycon as tycon1=tycon1 ()
- in ( ConTy (tycon, [ty']) ) end
-)
- in (LrTable.NT 14,(result,ty'1left,tycon1right),rest671) end
-| (40,(_,(MlyValue.tycon tycon1,_,tycon1right))::_::(_,(MlyValue.tyseq
- tyseq1,_,_))::(_,(_,LPAREN1left,_))::rest671) => let val result=
-MlyValue.ty'(fn _ => let val tyseq as tyseq1=tyseq1 ()
-val tycon as tycon1=tycon1 ()
- in ( ConTy (tycon, tyseq) ) end
-)
- in (LrTable.NT 14,(result,LPAREN1left,tycon1right),rest671) end
-| (41,(_,(MlyValue.TYVAR TYVAR1,TYVAR1left,TYVAR1right))::rest671) => 
-let val result=MlyValue.ty'(fn _ => let val TYVAR as TYVAR1=TYVAR1 ()
- in ( VarTy TYVAR ) end
-)
- in (LrTable.NT 14,(result,TYVAR1left,TYVAR1right),rest671) end
-| (42,(_,(MlyValue.tyseq tyseq1,_,tyseq1right))::_::(_,(MlyValue.ty 
-ty1,ty1left,_))::rest671) => let val result=MlyValue.tyseq(fn _ => 
-let val ty as ty1=ty1 ()
-val tyseq as tyseq1=tyseq1 ()
- in ( ty :: tyseq ) end
-)
- in (LrTable.NT 15,(result,ty1left,tyseq1right),rest671) end
-| (43,(_,(MlyValue.ty ty2,_,ty2right))::_::(_,(MlyValue.ty ty1,ty1left
-,_))::rest671) => let val result=MlyValue.tyseq(fn _ => let val ty1=
-ty1 ()
-val ty2=ty2 ()
- in ( [ty1, ty2] ) end
-)
- in (LrTable.NT 15,(result,ty1left,ty2right),rest671) end
-| (44,(_,(MlyValue.tyrow' tyrow'1,tyrow'1left,tyrow'1right))::rest671)
- => let val result=MlyValue.tyrow(fn _ => let val tyrow' as tyrow'1=
-tyrow'1 ()
- in ( tyrow' ) end
-)
- in (LrTable.NT 16,(result,tyrow'1left,tyrow'1right),rest671) end
-| (45,rest671) => let val result=MlyValue.tyrow(fn _ => ( [] ))
- in (LrTable.NT 16,(result,defaultPos,defaultPos),rest671) end
-| (46,(_,(MlyValue.tyrow' tyrow'1,_,tyrow'1right))::_::(_,(MlyValue.ty
- ty1,_,_))::_::(_,(MlyValue.selector selector1,selector1left,_))::
-rest671) => let val result=MlyValue.tyrow'(fn _ => let val selector
- as selector1=selector1 ()
-val ty as ty1=ty1 ()
-val tyrow' as tyrow'1=tyrow'1 ()
- in ( (selector,ty) :: tyrow' ) end
-)
- in (LrTable.NT 17,(result,selector1left,tyrow'1right),rest671) end
-| (47,(_,(MlyValue.ty ty1,_,ty1right))::_::(_,(MlyValue.selector 
-selector1,selector1left,_))::rest671) => let val result=
-MlyValue.tyrow'(fn _ => let val selector as selector1=selector1 ()
-val ty as ty1=ty1 ()
- in ( [(selector,ty)] ) end
-)
- in (LrTable.NT 17,(result,selector1left,ty1right),rest671) end
-| (48,(_,(MlyValue.tytuple tytuple1,_,tytuple1right))::_::(_,(
-MlyValue.ty' ty'1,ty'1left,_))::rest671) => let val result=
-MlyValue.tytuple(fn _ => let val ty' as ty'1=ty'1 ()
-val tytuple as tytuple1=tytuple1 ()
- in ( ty' :: tytuple ) end
-)
- in (LrTable.NT 18,(result,ty'1left,tytuple1right),rest671) end
-| (49,(_,(MlyValue.ty' ty'2,_,ty'2right))::_::(_,(MlyValue.ty' ty'1,
-ty'1left,_))::rest671) => let val result=MlyValue.tytuple(fn _ => let 
-val ty'1=ty'1 ()
-val ty'2=ty'2 ()
- in ( [ty'1, ty'2] ) end
-)
- in (LrTable.NT 18,(result,ty'1left,ty'2right),rest671) end
-| (50,(_,(MlyValue.TYVAR TYVAR1,TYVAR1left,TYVAR1right))::rest671) => 
-let val result=MlyValue.tyvars(fn _ => let val TYVAR as TYVAR1=TYVAR1 
-()
- in ( [TYVAR] ) end
-)
- in (LrTable.NT 19,(result,TYVAR1left,TYVAR1right),rest671) end
-| (51,(_,(_,_,RPAREN1right))::(_,(MlyValue.tyvar_pc tyvar_pc1,_,_))::(
-_,(_,LPAREN1left,_))::rest671) => let val result=MlyValue.tyvars(fn _
- => let val tyvar_pc as tyvar_pc1=tyvar_pc1 ()
- in ( tyvar_pc ) end
-)
- in (LrTable.NT 19,(result,LPAREN1left,RPAREN1right),rest671) end
-| (52,rest671) => let val result=MlyValue.tyvars(fn _ => ( [] ))
- in (LrTable.NT 19,(result,defaultPos,defaultPos),rest671) end
-| (53,(_,(MlyValue.TYVAR TYVAR1,TYVAR1left,TYVAR1right))::rest671) => 
-let val result=MlyValue.tyvarseq(fn _ => let val TYVAR as TYVAR1=
-TYVAR1 ()
- in ( [TYVAR] ) end
-)
- in (LrTable.NT 21,(result,TYVAR1left,TYVAR1right),rest671) end
-| (54,(_,(_,_,RPAREN1right))::(_,(MlyValue.tyvar_pc tyvar_pc1,_,_))::(
-_,(_,LPAREN1left,_))::rest671) => let val result=MlyValue.tyvarseq(fn 
-_ => let val tyvar_pc as tyvar_pc1=tyvar_pc1 ()
- in ( tyvar_pc ) end
-)
- in (LrTable.NT 21,(result,LPAREN1left,RPAREN1right),rest671) end
-| (55,(_,(MlyValue.TYVAR TYVAR1,TYVAR1left,TYVAR1right))::rest671) => 
-let val result=MlyValue.tyvar_pc(fn _ => let val TYVAR as TYVAR1=
-TYVAR1 ()
- in ( [TYVAR] ) end
-)
- in (LrTable.NT 20,(result,TYVAR1left,TYVAR1right),rest671) end
-| (56,(_,(MlyValue.tyvar_pc tyvar_pc1,_,tyvar_pc1right))::_::(_,(
-MlyValue.TYVAR TYVAR1,TYVAR1left,_))::rest671) => let val result=
-MlyValue.tyvar_pc(fn _ => let val TYVAR as TYVAR1=TYVAR1 ()
-val tyvar_pc as tyvar_pc1=tyvar_pc1 ()
- in ( TYVAR :: tyvar_pc ) end
-)
- in (LrTable.NT 20,(result,TYVAR1left,tyvar_pc1right),rest671) end
-| (57,(_,(MlyValue.reluses reluses1,_,reluses1right))::_::(_,(
-MlyValue.reldef reldef1,reldef1left,_))::rest671) => let val result=
-MlyValue.relationdef(fn _ => let val reldef as reldef1=reldef1 ()
-val reluses as reluses1=reluses1 ()
- in ( Relation {name=(#1 reldef), args=(#2 reldef), body=reluses} )
- end
-)
- in (LrTable.NT 24,(result,reldef1left,reluses1right),rest671) end
-| (58,(_,(_,_,DOT1right))::(_,(MlyValue.reldef reldef1,reldef1left,_))
-::rest671) => let val result=MlyValue.relationdef(fn _ => let val 
-reldef as reldef1=reldef1 ()
- in ( Relation {name=(#1 reldef), args=(#2 reldef), body=[]} ) end
-)
- in (LrTable.NT 24,(result,reldef1left,DOT1right),rest671) end
-| (59,(_,(_,_,RPAREN1right))::(_,(MlyValue.pat_list pat_list1,_,_))::_
-::(_,(MlyValue.ident ident1,ident1left,_))::rest671) => let val result
-=MlyValue.reldef(fn _ => let val ident as ident1=ident1 ()
-val pat_list as pat_list1=pat_list1 ()
- in ( (ident, pat_list) ) end
-)
- in (LrTable.NT 27,(result,ident1left,RPAREN1right),rest671) end
-| (60,(_,(MlyValue.reluses reluses1,_,reluses1right))::_::(_,(
-MlyValue.reluse reluse1,reluse1left,_))::rest671) => let val result=
-MlyValue.reluses(fn _ => let val reluse as reluse1=reluse1 ()
-val reluses as reluses1=reluses1 ()
- in ( reluse :: reluses ) end
-)
- in (LrTable.NT 25,(result,reluse1left,reluses1right),rest671) end
-| (61,(_,(_,_,DOT1right))::(_,(MlyValue.reluse reluse1,reluse1left,_))
-::rest671) => let val result=MlyValue.reluses(fn _ => let val reluse
- as reluse1=reluse1 ()
- in ( [reluse] ) end
-)
- in (LrTable.NT 25,(result,reluse1left,DOT1right),rest671) end
-| (62,(_,(_,_,RPAREN1right))::(_,(MlyValue.exp_list exp_list1,_,_))::_
-::(_,(MlyValue.qid qid1,qid1left,_))::rest671) => let val result=
-MlyValue.reluse(fn _ => let val qid as qid1=qid1 ()
-val exp_list as exp_list1=exp_list1 ()
- in ( (qid, exp_list, NONE) ) end
-)
- in (LrTable.NT 26,(result,qid1left,RPAREN1right),rest671) end
-| (63,(_,(_,_,RPAREN1right))::(_,(MlyValue.exp_list exp_list1,_,_))::_
-::(_,(MlyValue.ident ident1,_,_))::(_,(_,OP1left,_))::rest671) => let 
-val result=MlyValue.reluse(fn _ => let val ident as ident1=ident1 ()
-val exp_list as exp_list1=exp_list1 ()
- in ( (["op" ^ ident], exp_list, NONE) ) end
-)
- in (LrTable.NT 26,(result,OP1left,RPAREN1right),rest671) end
-| (64,(_,(_,_,RPAREN1right))::(_,(MlyValue.exp_list exp_list1,_,_))::_
-::(_,(MlyValue.qid qid1,_,_))::(_,(MlyValue.ID ID1,ID1left,_))::
-rest671) => let val result=MlyValue.reluse(fn _ => let val ID as ID1=
-ID1 ()
-val qid as qid1=qid1 ()
-val exp_list as exp_list1=exp_list1 ()
- in ( (qid, exp_list, SOME ID) ) end
-)
- in (LrTable.NT 26,(result,ID1left,RPAREN1right),rest671) end
-| (65,(_,(MlyValue.pat pat2,_,pat2right))::_::(_,(MlyValue.pat pat1,
-pat1left,_))::rest671) => let val result=MlyValue.pat(fn _ => let val 
-pat1=pat1 ()
-val pat2=pat2 ()
- in ( layered (pat1, pat2) ) end
-)
- in (LrTable.NT 28,(result,pat1left,pat2right),rest671) end
-| (66,(_,(MlyValue.ty ty1,_,ty1right))::_::(_,(MlyValue.pat pat1,
-pat1left,_))::rest671) => let val result=MlyValue.pat(fn _ => let val 
-pat as pat1=pat1 ()
-val ty as ty1=ty1 ()
- in ( ConstraintPat {pattern=pat,constraint=ty} ) end
-)
- in (LrTable.NT 28,(result,pat1left,ty1right),rest671) end
-| (67,(_,(MlyValue.apats apats1,apats1left,apats1right))::rest671) => 
-let val result=MlyValue.pat(fn _ => let val apats as apats1=apats1 ()
- in ( FlatAppPat apats ) end
-)
- in (LrTable.NT 28,(result,apats1left,apats1right),rest671) end
-| (68,(_,(MlyValue.apat apat1,apat1left,apat1right))::rest671) => let 
-val result=MlyValue.apats(fn _ => let val apat as apat1=apat1 ()
- in ( [apat] ) end
-)
- in (LrTable.NT 33,(result,apat1left,apat1right),rest671) end
-| (69,(_,(MlyValue.apats apats1,_,apats1right))::(_,(MlyValue.apat 
-apat1,apat1left,_))::rest671) => let val result=MlyValue.apats(fn _
- => let val apat as apat1=apat1 ()
-val apats as apats1=apats1 ()
- in ( apat :: apats ) end
-)
- in (LrTable.NT 33,(result,apat1left,apats1right),rest671) end
-| (70,(_,(MlyValue.apat' apat'1,apat'1left,apat'1right))::rest671) => 
-let val result=MlyValue.apat(fn _ => let val apat' as apat'1=apat'1 ()
- in ( apat' ) end
-)
- in (LrTable.NT 31,(result,apat'1left,apat'1right),rest671) end
-| (71,(_,(_,_,RPAREN1right))::(_,(MlyValue.pat pat1,_,_))::(_,(_,
-LPAREN1left,_))::rest671) => let val result=MlyValue.apat(fn _ => let 
-val pat as pat1=pat1 ()
- in ( pat ) end
-)
- in (LrTable.NT 31,(result,LPAREN1left,RPAREN1right),rest671) end
-| (72,(_,(MlyValue.id id1,id1left,id1right))::rest671) => let val 
-result=MlyValue.apat(fn _ => let val id as id1=id1 ()
- in ( VarPat [id] ) end
-)
- in (LrTable.NT 31,(result,id1left,id1right),rest671) end
-| (73,(_,(_,_,RPAREN1right))::(_,(_,LPAREN1left,_))::rest671) => let 
-val result=MlyValue.apat(fn _ => ( unitPat ))
- in (LrTable.NT 31,(result,LPAREN1left,RPAREN1right),rest671) end
-| (74,(_,(_,_,RPAREN1right))::(_,(MlyValue.pat_list pat_list1,_,_))::_
-::(_,(MlyValue.pat pat1,_,_))::(_,(_,LPAREN1left,_))::rest671) => let 
-val result=MlyValue.apat(fn _ => let val pat as pat1=pat1 ()
-val pat_list as pat_list1=pat_list1 ()
- in (
- TuplePat 
-                                               (pat :: pat_list) 
-) end
-)
- in (LrTable.NT 31,(result,LPAREN1left,RPAREN1right),rest671) end
-| (75,(_,(_,_,RPAREN1right))::(_,(MlyValue.or_pat_list or_pat_list1,_,
-_))::_::(_,(MlyValue.pat pat1,_,_))::(_,(_,LPAREN1left,_))::rest671)
- => let val result=MlyValue.apat(fn _ => let val pat as pat1=pat1 ()
-val or_pat_list as or_pat_list1=or_pat_list1 ()
- in (
- OrPat 
-                                               (pat :: or_pat_list) 
-) end
-)
- in (LrTable.NT 31,(result,LPAREN1left,RPAREN1right),rest671) end
-| (76,(_,(MlyValue.ident ident1,_,ident1right))::(_,(_,OP1left,_))::
-rest671) => let val result=MlyValue.apat'(fn _ => let val ident as 
-ident1=ident1 ()
- in ( VarPat [ident] ) end
-)
- in (LrTable.NT 32,(result,OP1left,ident1right),rest671) end
-| (77,(_,(MlyValue.qid qid1,_,qid1right))::_::(_,(MlyValue.idclass 
-idclass1,idclass1left,_))::rest671) => let val result=MlyValue.apat'(
-fn _ => let val idclass as idclass1=idclass1 ()
-val qid as qid1=qid1 ()
- in ( VarPat (idclass :: qid) ) end
-)
- in (LrTable.NT 32,(result,idclass1left,qid1right),rest671) end
-| (78,(_,(MlyValue.int int1,int1left,int1right))::rest671) => let val 
-result=MlyValue.apat'(fn _ => let val int as int1=int1 ()
- in ( IntPat int ) end
-)
- in (LrTable.NT 32,(result,int1left,int1right),rest671) end
-| (79,(_,(MlyValue.WORD WORD1,WORD1left,WORD1right))::rest671) => let 
-val result=MlyValue.apat'(fn _ => let val WORD as WORD1=WORD1 ()
- in ( WordPat WORD ) end
-)
- in (LrTable.NT 32,(result,WORD1left,WORD1right),rest671) end
-| (80,(_,(MlyValue.STRING STRING1,STRING1left,STRING1right))::rest671)
- => let val result=MlyValue.apat'(fn _ => let val STRING as STRING1=
-STRING1 ()
- in ( StringPat STRING ) end
-)
- in (LrTable.NT 32,(result,STRING1left,STRING1right),rest671) end
-| (81,(_,(MlyValue.CHAR CHAR1,CHAR1left,CHAR1right))::rest671) => let 
-val result=MlyValue.apat'(fn _ => let val CHAR as CHAR1=CHAR1 ()
- in ( CharPat CHAR ) end
-)
- in (LrTable.NT 32,(result,CHAR1left,CHAR1right),rest671) end
-| (82,(_,(_,WILD1left,WILD1right))::rest671) => let val result=
-MlyValue.apat'(fn _ => ( WildPat ))
- in (LrTable.NT 32,(result,WILD1left,WILD1right),rest671) end
-| (83,(_,(_,_,RBRACKET1right))::(_,(_,LBRACKET1left,_))::rest671) => 
-let val result=MlyValue.apat'(fn _ => ( ListPat nil ))
- in (LrTable.NT 32,(result,LBRACKET1left,RBRACKET1right),rest671) end
-| (84,(_,(_,_,RBRACKET1right))::(_,(MlyValue.pat_list pat_list1,_,_))
-::(_,(_,LBRACKET1left,_))::rest671) => let val result=MlyValue.apat'(
-fn _ => let val pat_list as pat_list1=pat_list1 ()
- in ( ListPat pat_list ) end
-)
- in (LrTable.NT 32,(result,LBRACKET1left,RBRACKET1right),rest671) end
-| (85,(_,(_,_,RBRACKET1right))::(_,(_,VECTORSTART1left,_))::rest671)
- => let val result=MlyValue.apat'(fn _ => ( VectorPat nil ))
- in (LrTable.NT 32,(result,VECTORSTART1left,RBRACKET1right),rest671)
- end
-| (86,(_,(_,_,RBRACKET1right))::(_,(MlyValue.pat_list pat_list1,_,_))
-::(_,(_,VECTORSTART1left,_))::rest671) => let val result=
-MlyValue.apat'(fn _ => let val pat_list as pat_list1=pat_list1 ()
- in ( VectorPat pat_list ) end
-)
- in (LrTable.NT 32,(result,VECTORSTART1left,RBRACKET1right),rest671)
- end
-| (87,(_,(_,_,RBRACE1right))::(_,(_,LBRACE1left,_))::rest671) => let 
-val result=MlyValue.apat'(fn _ => ( unitPat  ))
- in (LrTable.NT 32,(result,LBRACE1left,RBRACE1right),rest671) end
-| (88,(_,(_,_,RBRACE1right))::(_,(MlyValue.plabels plabels1,_,_))::(_,
-(_,LBRACE1left,_))::rest671) => let val result=MlyValue.apat'(fn _ => 
-let val plabels as plabels1=plabels1 ()
- in (
- let val (d,f) = plabels
+               (_,relationdefs')) => (id, relationdef :: relationdefs') (*#line 893.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 23, ( result, relationdef1left, relationdefs1right), rest671)
+end
+|  ( 12, ( ( _, ( MlyValue.relationdef relationdef1, relationdef1left, relationdef1right)) :: rest671)) => let val  result = MlyValue.relationdefs (fn _ => let val  (relationdef as relationdef1) = relationdef1 ()
+ in ((*#line 135.12 "parser.grm"*) case relationdef of 
+              Relation {name=id,...} => (id, [relationdef]) (*#line 902.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 23, ( result, relationdef1left, relationdef1right), rest671)
+end
+|  ( 13, ( ( _, ( MlyValue.ty ty1, _, ty1right)) :: _ :: ( _, ( MlyValue.idclass idclass1, _, _)) :: ( _, ( MlyValue.tyvars tyvars1, tyvars1left, _)) :: rest671)) => let val  result = MlyValue.tb (fn _ => let val  (tyvars as tyvars1) = tyvars1 ()
+ val  (idclass as idclass1) = idclass1 ()
+ val  (ty as ty1) = ty1 ()
+ in ((*#line 141.13 "parser.grm"*) [Tb {tyc=idclass, tyvars=tyvars, def=ty}] (*#line 909.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 3, ( result, tyvars1left, ty1right), rest671)
+end
+|  ( 14, ( ( _, ( MlyValue.tb tb2, _, tb2right)) :: _ :: ( _, ( MlyValue.tb tb1, tb1left, _)) :: rest671)) => let val  result = MlyValue.tb (fn _ => let val  tb1 = tb1 ()
+ val  tb2 = tb2 ()
+ in ((*#line 143.13 "parser.grm"*) tb1 @ tb2 (*#line 917.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 3, ( result, tb1left, tb2right), rest671)
+end
+|  ( 15, ( ( _, ( MlyValue.db db2, _, db2right)) :: _ :: ( _, ( MlyValue.db db1, db1left, _)) :: rest671)) => let val  result = MlyValue.db (fn _ => let val  db1 = db1 ()
+ val  db2 = db2 ()
+ in ((*#line 146.13 "parser.grm"*) db1 @ db2 (*#line 924.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 4, ( result, db1left, db2right), rest671)
+end
+|  ( 16, ( ( _, ( MlyValue.dbrhs dbrhs1, _, dbrhs1right)) :: _ :: ( _, ( MlyValue.ident ident1, _, _)) :: ( _, ( MlyValue.tyvars tyvars1, tyvars1left, _)) :: rest671)) => let val  result = MlyValue.db (fn _ => let val  (tyvars as tyvars1) = tyvars1 ()
+ val  (ident as ident1) = ident1 ()
+ val  (dbrhs as dbrhs1) = dbrhs1 ()
+ in ((*#line 148.13 "parser.grm"*) [Db {tyc=ident, tyvars=tyvars, rhs=dbrhs}] (*#line 931.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 4, ( result, tyvars1left, dbrhs1right), rest671)
+end
+|  ( 17, ( ( _, ( MlyValue.constrs constrs1, constrs1left, constrs1right)) :: rest671)) => let val  result = MlyValue.dbrhs (fn _ => let val  (constrs as constrs1) = constrs1 ()
+ in ((*#line 150.27 "parser.grm"*) Constrs constrs (*#line 939.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 5, ( result, constrs1left, constrs1right), rest671)
+end
+|  ( 18, ( ( _, ( MlyValue.tycon tycon1, _, tycon1right)) :: ( _, ( _, DATATYPE1left, _)) :: rest671)) => let val  result = MlyValue.dbrhs (fn _ => let val  (tycon as tycon1) = tycon1 ()
+ in ((*#line 151.27 "parser.grm"*) Repl tycon (*#line 945.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 5, ( result, DATATYPE1left, tycon1right), rest671)
+end
+|  ( 19, ( ( _, ( MlyValue.constr constr1, constr1left, constr1right)) :: rest671)) => let val  result = MlyValue.constrs (fn _ => let val  (constr as constr1) = constr1 ()
+ in ((*#line 154.31 "parser.grm"*) [constr] (*#line 951.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 6, ( result, constr1left, constr1right), rest671)
+end
+|  ( 20, ( ( _, ( MlyValue.constrs constrs1, _, constrs1right)) :: _ :: ( _, ( MlyValue.constr constr1, constr1left, _)) :: rest671)) => let val  result = MlyValue.constrs (fn _ => let val  (constr as constr1) = constr1 ()
+ val  (constrs as constrs1) = constrs1 ()
+ in ((*#line 155.31 "parser.grm"*) constr :: constrs (*#line 957.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 6, ( result, constr1left, constrs1right), rest671)
+end
+|  ( 21, ( ( _, ( MlyValue.ident ident1, _, ident1right)) :: ( _, ( MlyValue.op_op op_op1, op_op1left, _)) :: rest671)) => let val  result = MlyValue.constr (fn _ => let val  op_op1 = op_op1 ()
+ val  (ident as ident1) = ident1 ()
+ in ((*#line 158.29 "parser.grm"*) (ident, NONE) (*#line 964.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 7, ( result, op_op1left, ident1right), rest671)
+end
+|  ( 22, ( ( _, ( MlyValue.ty ty1, _, ty1right)) :: _ :: ( _, ( MlyValue.ident ident1, _, _)) :: ( _, ( MlyValue.op_op op_op1, op_op1left, _)) :: rest671)) => let val  result = MlyValue.constr (fn _ => let val  op_op1 = op_op1 ()
+ val  (ident as ident1) = ident1 ()
+ val  (ty as ty1) = ty1 ()
+ in ((*#line 159.29 "parser.grm"*) (ident, SOME ty) (*#line 971.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 7, ( result, op_op1left, ty1right), rest671)
+end
+|  ( 23, ( ( _, ( _, OP1left, OP1right)) :: rest671)) => let val  result = MlyValue.op_op (fn _ => ((*#line 161.14 "parser.grm"*)(*#line 979.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 8, ( result, OP1left, OP1right), rest671)
+end
+|  ( 24, ( rest671)) => let val  result = MlyValue.op_op (fn _ => ((*#line 162.14 "parser.grm"*)(*#line 983.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 8, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 25, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.tyinouts tyinouts1, _, _)) :: _ :: _ :: ( _, ( MlyValue.ident ident1, ident1left, _)) :: rest671)) => let val  result = MlyValue.relationtype (fn _ => let val  (ident as ident1) = ident1 ()
+ val  (tyinouts as tyinouts1) = tyinouts1 ()
+ in ((*#line 167.45 "parser.grm"*) (ident, tyinouts ) (*#line 987.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 9, ( result, ident1left, RPAREN1right), rest671)
+end
+|  ( 26, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.tyinouts tyinouts1, _, _)) :: _ :: _ :: ( _, ( MlyValue.ident ident1, _, _)) :: ( _, ( _, OP1left, _)) :: rest671)) => let val  result = MlyValue.relationtype (fn _ => let val  (ident as ident1) = ident1 ()
+ val  (tyinouts as tyinouts1) = tyinouts1 ()
+ in ((*#line 168.48 "parser.grm"*) ("op" ^ ident, tyinouts ) (*#line 994.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 9, ( result, OP1left, RPAREN1right), rest671)
+end
+|  ( 27, ( ( _, ( MlyValue.tyinouts tyinouts1, _, tyinouts1right)) :: _ :: ( _, ( MlyValue.tyinout tyinout1, tyinout1left, _)) :: rest671)) => let val  result = MlyValue.tyinouts (fn _ => let val  (tyinout as tyinout1) = tyinout1 ()
+ val  (tyinouts as tyinouts1) = tyinouts1 ()
+ in ((*#line 171.35 "parser.grm"*) tyinout :: tyinouts (*#line 1001.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 10, ( result, tyinout1left, tyinouts1right), rest671)
+end
+|  ( 28, ( ( _, ( MlyValue.tyinout tyinout1, tyinout1left, tyinout1right)) :: rest671)) => let val  result = MlyValue.tyinouts (fn _ => let val  (tyinout as tyinout1) = tyinout1 ()
+ in ((*#line 172.35 "parser.grm"*) [tyinout] (*#line 1008.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 10, ( result, tyinout1left, tyinout1right), rest671)
+end
+|  ( 29, ( ( _, ( MlyValue.inout inout1, _, inout1right)) :: _ :: ( _, ( MlyValue.ty ty1, ty1left, _)) :: rest671)) => let val  result = MlyValue.tyinout (fn _ => let val  (ty as ty1) = ty1 ()
+ val  (inout as inout1) = inout1 ()
+ in ((*#line 175.26 "parser.grm"*) (ty, SOME inout) (*#line 1014.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 11, ( result, ty1left, inout1right), rest671)
+end
+|  ( 30, ( ( _, ( MlyValue.ty ty1, ty1left, ty1right)) :: rest671)) => let val  result = MlyValue.tyinout (fn _ => let val  (ty as ty1) = ty1 ()
+ in ((*#line 176.26 "parser.grm"*) (ty, NONE) (*#line 1021.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 11, ( result, ty1left, ty1right), rest671)
+end
+|  ( 31, ( ( _, ( _, IN1left, IN1right)) :: rest671)) => let val  result = MlyValue.inout (fn _ => ((*#line 178.16 "parser.grm"*) IN  (*#line 1027.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 12, ( result, IN1left, IN1right), rest671)
+end
+|  ( 32, ( ( _, ( _, OUT1left, OUT1right)) :: rest671)) => let val  result = MlyValue.inout (fn _ => ((*#line 179.16 "parser.grm"*) OUT (*#line 1031.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 12, ( result, OUT1left, OUT1right), rest671)
+end
+|  ( 33, ( ( _, ( MlyValue.tytuple tytuple1, tytuple1left, tytuple1right)) :: rest671)) => let val  result = MlyValue.ty (fn _ => let val  (tytuple as tytuple1) = tytuple1 ()
+ in ((*#line 181.23 "parser.grm"*) TupleTy tytuple (*#line 1035.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 13, ( result, tytuple1left, tytuple1right), rest671)
+end
+|  ( 34, ( ( _, ( MlyValue.ty ty2, _, ty2right)) :: _ :: ( _, ( MlyValue.ty ty1, ty1left, _)) :: rest671)) => let val  result = MlyValue.ty (fn _ => let val  ty1 = ty1 ()
+ val  ty2 = ty2 ()
+ in ((*#line 182.23 "parser.grm"*) ConTy ([arrowTycon], [ty1,ty2]) (*#line 1041.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 13, ( result, ty1left, ty2right), rest671)
+end
+|  ( 35, ( ( _, ( MlyValue.ty' ty'1, ty'1left, ty'1right)) :: rest671)) => let val  result = MlyValue.ty (fn _ => let val  (ty' as ty'1) = ty'1 ()
+ in ((*#line 183.23 "parser.grm"*) ty' (*#line 1048.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 13, ( result, ty'1left, ty'1right), rest671)
+end
+|  ( 36, ( ( _, ( _, _, RBRACE1right)) :: ( _, ( MlyValue.tyrow tyrow1, _, _)) :: ( _, ( _, LBRACE1left, _)) :: rest671)) => let val  result = MlyValue.ty' (fn _ => let val  (tyrow as tyrow1) = tyrow1 ()
+ in ((*#line 185.37 "parser.grm"*) RecordTy (Util.sortLabels tyrow) (*#line 1054.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 14, ( result, LBRACE1left, RBRACE1right), rest671)
+end
+|  ( 37, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.ty ty1, _, _)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.ty' (fn _ => let val  (ty as ty1) = ty1 ()
+ in ((*#line 186.37 "parser.grm"*) ty (*#line 1060.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 14, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 38, ( ( _, ( MlyValue.tycon tycon1, tycon1left, tycon1right)) :: rest671)) => let val  result = MlyValue.ty' (fn _ => let val  (tycon as tycon1) = tycon1 ()
+ in ((*#line 187.37 "parser.grm"*) ConTy (tycon, []) (*#line 1066.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 14, ( result, tycon1left, tycon1right), rest671)
+end
+|  ( 39, ( ( _, ( MlyValue.tycon tycon1, _, tycon1right)) :: ( _, ( MlyValue.ty' ty'1, ty'1left, _)) :: rest671)) => let val  result = MlyValue.ty' (fn _ => let val  (ty' as ty'1) = ty'1 ()
+ val  (tycon as tycon1) = tycon1 ()
+ in ((*#line 188.37 "parser.grm"*) ConTy (tycon, [ty']) (*#line 1072.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 14, ( result, ty'1left, tycon1right), rest671)
+end
+|  ( 40, ( ( _, ( MlyValue.tycon tycon1, _, tycon1right)) :: _ :: ( _, ( MlyValue.tyseq tyseq1, _, _)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.ty' (fn _ => let val  (tyseq as tyseq1) = tyseq1 ()
+ val  (tycon as tycon1) = tycon1 ()
+ in ((*#line 189.37 "parser.grm"*) ConTy (tycon, tyseq) (*#line 1079.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 14, ( result, LPAREN1left, tycon1right), rest671)
+end
+|  ( 41, ( ( _, ( MlyValue.TYVAR TYVAR1, TYVAR1left, TYVAR1right)) :: rest671)) => let val  result = MlyValue.ty' (fn _ => let val  (TYVAR as TYVAR1) = TYVAR1 ()
+ in ((*#line 190.37 "parser.grm"*) VarTy TYVAR (*#line 1086.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 14, ( result, TYVAR1left, TYVAR1right), rest671)
+end
+|  ( 42, ( ( _, ( MlyValue.tyseq tyseq1, _, tyseq1right)) :: _ :: ( _, ( MlyValue.ty ty1, ty1left, _)) :: rest671)) => let val  result = MlyValue.tyseq (fn _ => let val  (ty as ty1) = ty1 ()
+ val  (tyseq as tyseq1) = tyseq1 ()
+ in ((*#line 193.26 "parser.grm"*) ty :: tyseq (*#line 1092.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 15, ( result, ty1left, tyseq1right), rest671)
+end
+|  ( 43, ( ( _, ( MlyValue.ty ty2, _, ty2right)) :: _ :: ( _, ( MlyValue.ty ty1, ty1left, _)) :: rest671)) => let val  result = MlyValue.tyseq (fn _ => let val  ty1 = ty1 ()
+ val  ty2 = ty2 ()
+ in ((*#line 194.28 "parser.grm"*) [ty1, ty2] (*#line 1099.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 15, ( result, ty1left, ty2right), rest671)
+end
+|  ( 44, ( ( _, ( MlyValue.tyrow' tyrow'1, tyrow'1left, tyrow'1right)) :: rest671)) => let val  result = MlyValue.tyrow (fn _ => let val  (tyrow' as tyrow'1) = tyrow'1 ()
+ in ((*#line 197.17 "parser.grm"*) tyrow' (*#line 1106.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 16, ( result, tyrow'1left, tyrow'1right), rest671)
+end
+|  ( 45, ( rest671)) => let val  result = MlyValue.tyrow (fn _ => ((*#line 198.19 "parser.grm"*) [] (*#line 1112.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 16, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 46, ( ( _, ( MlyValue.tyrow' tyrow'1, _, tyrow'1right)) :: _ :: ( _, ( MlyValue.ty ty1, _, _)) :: _ :: ( _, ( MlyValue.selector selector1, selector1left, _)) :: rest671)) => let val  result = MlyValue.tyrow' (fn _ => let val  (selector as selector1) = selector1 ()
+ val  (ty as ty1) = ty1 ()
+ val  (tyrow' as tyrow'1) = tyrow'1 ()
+ in ((*#line 202.19 "parser.grm"*) (selector,ty) :: tyrow' (*#line 1116.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 17, ( result, selector1left, tyrow'1right), rest671)
+end
+|  ( 47, ( ( _, ( MlyValue.ty ty1, _, ty1right)) :: _ :: ( _, ( MlyValue.selector selector1, selector1left, _)) :: rest671)) => let val  result = MlyValue.tyrow' (fn _ => let val  (selector as selector1) = selector1 ()
+ val  (ty as ty1) = ty1 ()
+ in ((*#line 204.19 "parser.grm"*) [(selector,ty)] (*#line 1124.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 17, ( result, selector1left, ty1right), rest671)
+end
+|  ( 48, ( ( _, ( MlyValue.tytuple tytuple1, _, tytuple1right)) :: _ :: ( _, ( MlyValue.ty' ty'1, ty'1left, _)) :: rest671)) => let val  result = MlyValue.tytuple (fn _ => let val  (ty' as ty'1) = ty'1 ()
+ val  (tytuple as tytuple1) = tytuple1 ()
+ in ((*#line 207.32 "parser.grm"*) ty' :: tytuple (*#line 1131.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 18, ( result, ty'1left, tytuple1right), rest671)
+end
+|  ( 49, ( ( _, ( MlyValue.ty' ty'2, _, ty'2right)) :: _ :: ( _, ( MlyValue.ty' ty'1, ty'1left, _)) :: rest671)) => let val  result = MlyValue.tytuple (fn _ => let val  ty'1 = ty'1 ()
+ val  ty'2 = ty'2 ()
+ in ((*#line 208.32 "parser.grm"*) [ty'1, ty'2] (*#line 1138.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 18, ( result, ty'1left, ty'2right), rest671)
+end
+|  ( 50, ( ( _, ( MlyValue.TYVAR TYVAR1, TYVAR1left, TYVAR1right)) :: rest671)) => let val  result = MlyValue.tyvars (fn _ => let val  (TYVAR as TYVAR1) = TYVAR1 ()
+ in ((*#line 211.34 "parser.grm"*) [TYVAR] (*#line 1145.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 19, ( result, TYVAR1left, TYVAR1right), rest671)
+end
+|  ( 51, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.tyvar_pc tyvar_pc1, _, _)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.tyvars (fn _ => let val  (tyvar_pc as tyvar_pc1) = tyvar_pc1 ()
+ in ((*#line 212.34 "parser.grm"*) tyvar_pc (*#line 1151.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 19, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 52, ( rest671)) => let val  result = MlyValue.tyvars (fn _ => ((*#line 213.34 "parser.grm"*) [] (*#line 1157.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 19, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 53, ( ( _, ( MlyValue.TYVAR TYVAR1, TYVAR1left, TYVAR1right)) :: rest671)) => let val  result = MlyValue.tyvarseq (fn _ => let val  (TYVAR as TYVAR1) = TYVAR1 ()
+ in ((*#line 216.33 "parser.grm"*) [TYVAR] (*#line 1161.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 21, ( result, TYVAR1left, TYVAR1right), rest671)
+end
+|  ( 54, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.tyvar_pc tyvar_pc1, _, _)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.tyvarseq (fn _ => let val  (tyvar_pc as tyvar_pc1) = tyvar_pc1 ()
+ in ((*#line 217.33 "parser.grm"*) tyvar_pc (*#line 1167.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 21, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 55, ( ( _, ( MlyValue.TYVAR TYVAR1, TYVAR1left, TYVAR1right)) :: rest671)) => let val  result = MlyValue.tyvar_pc (fn _ => let val  (TYVAR as TYVAR1) = TYVAR1 ()
+ in ((*#line 220.33 "parser.grm"*) [TYVAR] (*#line 1173.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 20, ( result, TYVAR1left, TYVAR1right), rest671)
+end
+|  ( 56, ( ( _, ( MlyValue.tyvar_pc tyvar_pc1, _, tyvar_pc1right)) :: _ :: ( _, ( MlyValue.TYVAR TYVAR1, TYVAR1left, _)) :: rest671)) => let val  result = MlyValue.tyvar_pc (fn _ => let val  (TYVAR as TYVAR1) = TYVAR1 ()
+ val  (tyvar_pc as tyvar_pc1) = tyvar_pc1 ()
+ in ((*#line 221.33 "parser.grm"*) TYVAR :: tyvar_pc (*#line 1179.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 20, ( result, TYVAR1left, tyvar_pc1right), rest671)
+end
+|  ( 57, ( ( _, ( MlyValue.reluses reluses1, _, reluses1right)) :: _ :: ( _, ( MlyValue.reldef reldef1, reldef1left, _)) :: rest671)) => let val  result = MlyValue.relationdef (fn _ => let val  (reldef as reldef1) = reldef1 ()
+ val  (reluses as reluses1) = reluses1 ()
+ in ((*#line 227.12 "parser.grm"*) Relation {name=(#1 reldef), args=(#2 reldef), body=reluses} (*#line 1186.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 24, ( result, reldef1left, reluses1right), rest671)
+end
+|  ( 58, ( ( _, ( _, _, DOT1right)) :: ( _, ( MlyValue.reldef reldef1, reldef1left, _)) :: rest671)) => let val  result = MlyValue.relationdef (fn _ => let val  (reldef as reldef1) = reldef1 ()
+ in ((*#line 229.12 "parser.grm"*) Relation {name=(#1 reldef), args=(#2 reldef), body=[]} (*#line 1193.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 24, ( result, reldef1left, DOT1right), rest671)
+end
+|  ( 59, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.pat_list pat_list1, _, _)) :: _ :: ( _, ( MlyValue.ident ident1, ident1left, _)) :: rest671)) => let val  result = MlyValue.reldef (fn _ => let val  (ident as ident1) = ident1 ()
+ val  (pat_list as pat_list1) = pat_list1 ()
+ in ((*#line 232.42 "parser.grm"*) (ident, pat_list) (*#line 1199.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 27, ( result, ident1left, RPAREN1right), rest671)
+end
+|  ( 60, ( ( _, ( MlyValue.reluses reluses1, _, reluses1right)) :: _ :: ( _, ( MlyValue.reluse reluse1, reluse1left, _)) :: rest671)) => let val  result = MlyValue.reluses (fn _ => let val  (reluse as reluse1) = reluse1 ()
+ val  (reluses as reluses1) = reluses1 ()
+ in ((*#line 235.32 "parser.grm"*) reluse :: reluses (*#line 1206.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 25, ( result, reluse1left, reluses1right), rest671)
+end
+|  ( 61, ( ( _, ( _, _, DOT1right)) :: ( _, ( MlyValue.reluse reluse1, reluse1left, _)) :: rest671)) => let val  result = MlyValue.reluses (fn _ => let val  (reluse as reluse1) = reluse1 ()
+ in ((*#line 236.32 "parser.grm"*) [reluse] (*#line 1213.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 25, ( result, reluse1left, DOT1right), rest671)
+end
+|  ( 62, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.exp_list exp_list1, _, _)) :: _ :: ( _, ( MlyValue.qid qid1, qid1left, _)) :: rest671)) => let val  result = MlyValue.reluse (fn _ => let val  (qid as qid1) = qid1 ()
+ val  (exp_list as exp_list1) = exp_list1 ()
+ in ((*#line 239.39 "parser.grm"*) (qid, exp_list, NONE) (*#line 1219.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 26, ( result, qid1left, RPAREN1right), rest671)
+end
+|  ( 63, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.exp_list exp_list1, _, _)) :: _ :: ( _, ( MlyValue.ident ident1, _, _)) :: ( _, ( _, OP1left, _)) :: rest671)) => let val  result = MlyValue.reluse (fn _ => let val  (ident as ident1) = ident1 ()
+ val  (exp_list as exp_list1) = exp_list1 ()
+ in ((*#line 240.44 "parser.grm"*) (["op" ^ ident], exp_list, NONE) (*#line 1226.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 26, ( result, OP1left, RPAREN1right), rest671)
+end
+|  ( 64, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.exp_list exp_list1, _, _)) :: _ :: ( _, ( MlyValue.qid qid1, _, _)) :: ( _, ( MlyValue.ID ID1, ID1left, _)) :: rest671)) => let val  result = MlyValue.reluse (fn _ => let val  (ID as ID1) = ID1 ()
+ val  (qid as qid1) = qid1 ()
+ val  (exp_list as exp_list1) = exp_list1 ()
+ in ((*#line 241.42 "parser.grm"*) (qid, exp_list, SOME ID) (*#line 1233.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 26, ( result, ID1left, RPAREN1right), rest671)
+end
+|  ( 65, ( ( _, ( MlyValue.pat pat2, _, pat2right)) :: _ :: ( _, ( MlyValue.pat pat1, pat1left, _)) :: rest671)) => let val  result = MlyValue.pat (fn _ => let val  pat1 = pat1 ()
+ val  pat2 = pat2 ()
+ in ((*#line 245.30 "parser.grm"*) layered (pat1, pat2) (*#line 1241.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 28, ( result, pat1left, pat2right), rest671)
+end
+|  ( 66, ( ( _, ( MlyValue.ty ty1, _, ty1right)) :: _ :: ( _, ( MlyValue.pat pat1, pat1left, _)) :: rest671)) => let val  result = MlyValue.pat (fn _ => let val  (pat as pat1) = pat1 ()
+ val  (ty as ty1) = ty1 ()
+ in ((*#line 246.30 "parser.grm"*) ConstraintPat {pattern=pat,constraint=ty} (*#line 1248.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 28, ( result, pat1left, ty1right), rest671)
+end
+|  ( 67, ( ( _, ( MlyValue.apats apats1, apats1left, apats1right)) :: rest671)) => let val  result = MlyValue.pat (fn _ => let val  (apats as apats1) = apats1 ()
+ in ((*#line 247.30 "parser.grm"*) FlatAppPat apats (*#line 1255.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 28, ( result, apats1left, apats1right), rest671)
+end
+|  ( 68, ( ( _, ( MlyValue.apat apat1, apat1left, apat1right)) :: rest671)) => let val  result = MlyValue.apats (fn _ => let val  (apat as apat1) = apat1 ()
+ in ((*#line 249.23 "parser.grm"*) [apat] (*#line 1261.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 33, ( result, apat1left, apat1right), rest671)
+end
+|  ( 69, ( ( _, ( MlyValue.apats apats1, _, apats1right)) :: ( _, ( MlyValue.apat apat1, apat1left, _)) :: rest671)) => let val  result = MlyValue.apats (fn _ => let val  (apat as apat1) = apat1 ()
+ val  (apats as apats1) = apats1 ()
+ in ((*#line 250.23 "parser.grm"*) apat :: apats (*#line 1267.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 33, ( result, apat1left, apats1right), rest671)
+end
+|  ( 70, ( ( _, ( MlyValue.apat' apat'1, apat'1left, apat'1right)) :: rest671)) => let val  result = MlyValue.apat (fn _ => let val  (apat' as apat'1) = apat'1 ()
+ in ((*#line 252.45 "parser.grm"*) apat' (*#line 1274.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 31, ( result, apat'1left, apat'1right), rest671)
+end
+|  ( 71, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.pat pat1, _, _)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.apat (fn _ => let val  (pat as pat1) = pat1 ()
+ in ((*#line 253.45 "parser.grm"*) pat (*#line 1280.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 31, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 72, ( ( _, ( MlyValue.id id1, id1left, id1right)) :: rest671)) => let val  result = MlyValue.apat (fn _ => let val  (id as id1) = id1 ()
+ in ((*#line 254.45 "parser.grm"*) VarPat [id] (*#line 1286.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 31, ( result, id1left, id1right), rest671)
+end
+|  ( 73, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.apat (fn _ => ((*#line 255.45 "parser.grm"*) unitPat (*#line 1292.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 31, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 74, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.pat_list pat_list1, _, _)) :: _ :: ( _, ( MlyValue.pat pat1, _, _)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.apat (fn _ => let val  (pat as pat1) = pat1 ()
+ val  (pat_list as pat_list1) = pat_list1 ()
+ in ((*#line 256.45 "parser.grm"*) TuplePat 
+                                               (pat :: pat_list) (*#line 1296.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 31, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 75, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.or_pat_list or_pat_list1, _, _)) :: _ :: ( _, ( MlyValue.pat pat1, _, _)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.apat (fn _ => let val  (pat as pat1) = pat1 ()
+ val  (or_pat_list as or_pat_list1) = or_pat_list1 ()
+ in ((*#line 258.45 "parser.grm"*) OrPat 
+                                               (pat :: or_pat_list) (*#line 1304.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 31, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 76, ( ( _, ( MlyValue.ident ident1, _, ident1right)) :: ( _, ( _, OP1left, _)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => let val  (ident as ident1) = ident1 ()
+ in ((*#line 261.42 "parser.grm"*) VarPat [ident] (*#line 1312.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 32, ( result, OP1left, ident1right), rest671)
+end
+|  ( 77, ( ( _, ( MlyValue.qid qid1, _, qid1right)) :: _ :: ( _, ( MlyValue.idclass idclass1, idclass1left, _)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ val  (qid as qid1) = qid1 ()
+ in ((*#line 262.42 "parser.grm"*) VarPat (idclass :: qid) (*#line 1318.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 32, ( result, idclass1left, qid1right), rest671)
+end
+|  ( 78, ( ( _, ( MlyValue.int int1, int1left, int1right)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => let val  (int as int1) = int1 ()
+ in ((*#line 263.42 "parser.grm"*) IntPat int (*#line 1325.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 32, ( result, int1left, int1right), rest671)
+end
+|  ( 79, ( ( _, ( MlyValue.WORD WORD1, WORD1left, WORD1right)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => let val  (WORD as WORD1) = WORD1 ()
+ in ((*#line 264.42 "parser.grm"*) WordPat WORD (*#line 1331.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 32, ( result, WORD1left, WORD1right), rest671)
+end
+|  ( 80, ( ( _, ( MlyValue.STRING STRING1, STRING1left, STRING1right)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => let val  (STRING as STRING1) = STRING1 ()
+ in ((*#line 265.42 "parser.grm"*) StringPat STRING (*#line 1337.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 32, ( result, STRING1left, STRING1right), rest671)
+end
+|  ( 81, ( ( _, ( MlyValue.CHAR CHAR1, CHAR1left, CHAR1right)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => let val  (CHAR as CHAR1) = CHAR1 ()
+ in ((*#line 266.42 "parser.grm"*) CharPat CHAR (*#line 1343.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 32, ( result, CHAR1left, CHAR1right), rest671)
+end
+|  ( 82, ( ( _, ( _, WILD1left, WILD1right)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => ((*#line 267.42 "parser.grm"*) WildPat (*#line 1349.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 32, ( result, WILD1left, WILD1right), rest671)
+end
+|  ( 83, ( ( _, ( _, _, RBRACKET1right)) :: ( _, ( _, LBRACKET1left, _)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => ((*#line 268.42 "parser.grm"*) ListPat nil (*#line 1353.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 32, ( result, LBRACKET1left, RBRACKET1right), rest671)
+end
+|  ( 84, ( ( _, ( _, _, RBRACKET1right)) :: ( _, ( MlyValue.pat_list pat_list1, _, _)) :: ( _, ( _, LBRACKET1left, _)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => let val  (pat_list as pat_list1) = pat_list1 ()
+ in ((*#line 269.42 "parser.grm"*) ListPat pat_list (*#line 1357.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 32, ( result, LBRACKET1left, RBRACKET1right), rest671)
+end
+|  ( 85, ( ( _, ( _, _, RBRACKET1right)) :: ( _, ( _, VECTORSTART1left, _)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => ((*#line 270.42 "parser.grm"*) VectorPat nil (*#line 1363.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 32, ( result, VECTORSTART1left, RBRACKET1right), rest671)
+end
+|  ( 86, ( ( _, ( _, _, RBRACKET1right)) :: ( _, ( MlyValue.pat_list pat_list1, _, _)) :: ( _, ( _, VECTORSTART1left, _)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => let val  (pat_list as pat_list1) = pat_list1 ()
+ in ((*#line 271.42 "parser.grm"*) VectorPat pat_list (*#line 1367.1 "parser.grm.sml"*)
+)
+end)
+ in ( LrTable.NT 32, ( result, VECTORSTART1left, RBRACKET1right), rest671)
+end
+|  ( 87, ( ( _, ( _, _, RBRACE1right)) :: ( _, ( _, LBRACE1left, _)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => ((*#line 272.42 "parser.grm"*) unitPat  (*#line 1373.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 32, ( result, LBRACE1left, RBRACE1right), rest671)
+end
+|  ( 88, ( ( _, ( _, _, RBRACE1right)) :: ( _, ( MlyValue.plabels plabels1, _, _)) :: ( _, ( _, LBRACE1left, _)) :: rest671)) => let val  result = MlyValue.apat' (fn _ => let val  (plabels as plabels1) = plabels1 ()
+ in ((*#line 273.42 "parser.grm"*) let val (d,f) = plabels
                                           in  RecordPat 
                                                 {def=Util.sortLabels d,
-                                                flexibility=f} end 
-) end
+                                                flexibility=f} end (*#line 1377.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 32,(result,LBRACE1left,RBRACE1right),rest671) end
-| (89,(_,(MlyValue.plabels plabels1,_,plabels1right))::_::(_,(
-MlyValue.plabel plabel1,plabel1left,_))::rest671) => let val result=
-MlyValue.plabels(fn _ => let val plabel as plabel1=plabel1 ()
-val plabels as plabels1=plabels1 ()
- in (
- let val (a,(b,fx)) = (plabel, plabels)
-                                in  (a::b, fx) end 
-) end
+end)
+ in ( LrTable.NT 32, ( result, LBRACE1left, RBRACE1right), rest671)
+end
+|  ( 89, ( ( _, ( MlyValue.plabels plabels1, _, plabels1right)) :: _ :: ( _, ( MlyValue.plabel plabel1, plabel1left, _)) :: rest671)) => let val  result = MlyValue.plabels (fn _ => let val  (plabel as plabel1) = plabel1 ()
+ val  (plabels as plabels1) = plabels1 ()
+ in ((*#line 279.32 "parser.grm"*) let val (a,(b,fx)) = (plabel, plabels)
+                                in  (a::b, fx) end (*#line 1386.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 34,(result,plabel1left,plabels1right),rest671) end
-| (90,(_,(MlyValue.plabel plabel1,plabel1left,plabel1right))::rest671)
- => let val result=MlyValue.plabels(fn _ => let val plabel as plabel1=
-plabel1 ()
- in ( [plabel], false ) end
+end)
+ in ( LrTable.NT 34, ( result, plabel1left, plabels1right), rest671)
+end
+|  ( 90, ( ( _, ( MlyValue.plabel plabel1, plabel1left, plabel1right)) :: rest671)) => let val  result = MlyValue.plabels (fn _ => let val  (plabel as plabel1) = plabel1 ()
+ in ((*#line 281.32 "parser.grm"*) [plabel], false (*#line 1394.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 34,(result,plabel1left,plabel1right),rest671) end
-| (91,(_,(_,DOTDOTDOT1left,DOTDOTDOT1right))::rest671) => let val 
-result=MlyValue.plabels(fn _ => ( nil, true ))
- in (LrTable.NT 34,(result,DOTDOTDOT1left,DOTDOTDOT1right),rest671)
- end
-| (92,(_,(MlyValue.pat pat1,_,pat1right))::_::(_,(MlyValue.selector 
-selector1,selector1left,_))::rest671) => let val result=
-MlyValue.plabel(fn _ => let val selector as selector1=selector1 ()
-val pat as pat1=pat1 ()
- in ( (selector, pat) ) end
+end)
+ in ( LrTable.NT 34, ( result, plabel1left, plabel1right), rest671)
+end
+|  ( 91, ( ( _, ( _, DOTDOTDOT1left, DOTDOTDOT1right)) :: rest671)) => let val  result = MlyValue.plabels (fn _ => ((*#line 282.32 "parser.grm"*) nil, true (*#line 1400.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 34, ( result, DOTDOTDOT1left, DOTDOTDOT1right), rest671)
+end
+|  ( 92, ( ( _, ( MlyValue.pat pat1, _, pat1right)) :: _ :: ( _, ( MlyValue.selector selector1, selector1left, _)) :: rest671)) => let val  result = MlyValue.plabel (fn _ => let val  (selector as selector1) = selector1 ()
+ val  (pat as pat1) = pat1 ()
+ in ((*#line 285.32 "parser.grm"*) (selector, pat) (*#line 1404.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 35,(result,selector1left,pat1right),rest671) end
-| (93,(_,(MlyValue.idclass idclass1,idclass1left,idclass1right))::
-rest671) => let val result=MlyValue.plabel(fn _ => let val idclass as 
-idclass1=idclass1 ()
- in ( (idclass, VarPat [idclass] ) ) end
+end)
+ in ( LrTable.NT 35, ( result, selector1left, pat1right), rest671)
+end
+|  ( 93, ( ( _, ( MlyValue.idclass idclass1, idclass1left, idclass1right)) :: rest671)) => let val  result = MlyValue.plabel (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ in ((*#line 286.32 "parser.grm"*) (idclass, VarPat [idclass] ) (*#line 1411.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 35,(result,idclass1left,idclass1right),rest671) end
-| (94,(_,(MlyValue.pat pat1,_,pat1right))::_::(_,(MlyValue.idclass 
-idclass1,idclass1left,_))::rest671) => let val result=MlyValue.plabel(
-fn _ => let val idclass as idclass1=idclass1 ()
-val pat as pat1=pat1 ()
- in (
- (idclass, LayeredPat 
+end)
+ in ( LrTable.NT 35, ( result, idclass1left, idclass1right), rest671)
+end
+|  ( 94, ( ( _, ( MlyValue.pat pat1, _, pat1right)) :: _ :: ( _, ( MlyValue.idclass idclass1, idclass1left, _)) :: rest671)) => let val  result = MlyValue.plabel (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ val  (pat as pat1) = pat1 ()
+ in ((*#line 287.32 "parser.grm"*) (idclass, LayeredPat 
                                             {varPat=VarPat [idclass],
-                                             expPat=pat} ) 
-) end
+                                             expPat=pat} ) (*#line 1417.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 35,(result,idclass1left,pat1right),rest671) end
-| (95,(_,(MlyValue.ty ty1,_,ty1right))::_::(_,(MlyValue.idclass 
-idclass1,idclass1left,_))::rest671) => let val result=MlyValue.plabel(
-fn _ => let val idclass as idclass1=idclass1 ()
-val ty1=ty1 ()
- in ( (idclass, VarPat [idclass] ) ) end
+end)
+ in ( LrTable.NT 35, ( result, idclass1left, pat1right), rest671)
+end
+|  ( 95, ( ( _, ( MlyValue.ty ty1, _, ty1right)) :: _ :: ( _, ( MlyValue.idclass idclass1, idclass1left, _)) :: rest671)) => let val  result = MlyValue.plabel (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ val  ty1 = ty1 ()
+ in ((*#line 290.32 "parser.grm"*) (idclass, VarPat [idclass] ) (*#line 1426.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 35,(result,idclass1left,ty1right),rest671) end
-| (96,(_,(MlyValue.pat pat1,_,pat1right))::_::(_,(MlyValue.ty ty1,_,_)
-)::_::(_,(MlyValue.idclass idclass1,idclass1left,_))::rest671) => let 
-val result=MlyValue.plabel(fn _ => let val idclass as idclass1=
-idclass1 ()
-val ty1=ty1 ()
-val pat as pat1=pat1 ()
- in (
- (idclass, LayeredPat
+end)
+ in ( LrTable.NT 35, ( result, idclass1left, ty1right), rest671)
+end
+|  ( 96, ( ( _, ( MlyValue.pat pat1, _, pat1right)) :: _ :: ( _, ( MlyValue.ty ty1, _, _)) :: _ :: ( _, ( MlyValue.idclass idclass1, idclass1left, _)) :: rest671)) => let val  result = MlyValue.plabel (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ val  ty1 = ty1 ()
+ val  (pat as pat1) = pat1 ()
+ in ((*#line 292.32 "parser.grm"*) (idclass, LayeredPat
                                             {varPat=VarPat [idclass],
-                                             expPat=pat} ) 
-) end
+                                             expPat=pat} ) (*#line 1433.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 35,(result,idclass1left,pat1right),rest671) end
-| (97,(_,(MlyValue.pat pat1,pat1left,pat1right))::rest671) => let val 
-result=MlyValue.pat_list(fn _ => let val pat as pat1=pat1 ()
- in ( [pat] ) end
+end)
+ in ( LrTable.NT 35, ( result, idclass1left, pat1right), rest671)
+end
+|  ( 97, ( ( _, ( MlyValue.pat pat1, pat1left, pat1right)) :: rest671)) => let val  result = MlyValue.pat_list (fn _ => let val  (pat as pat1) = pat1 ()
+ in ((*#line 297.30 "parser.grm"*) [pat] (*#line 1443.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 29,(result,pat1left,pat1right),rest671) end
-| (98,(_,(MlyValue.pat_list pat_list1,_,pat_list1right))::_::(_,(
-MlyValue.pat pat1,pat1left,_))::rest671) => let val result=
-MlyValue.pat_list(fn _ => let val pat as pat1=pat1 ()
-val pat_list as pat_list1=pat_list1 ()
- in ( (pat :: pat_list) ) end
+end)
+ in ( LrTable.NT 29, ( result, pat1left, pat1right), rest671)
+end
+|  ( 98, ( ( _, ( MlyValue.pat_list pat_list1, _, pat_list1right)) :: _ :: ( _, ( MlyValue.pat pat1, pat1left, _)) :: rest671)) => let val  result = MlyValue.pat_list (fn _ => let val  (pat as pat1) = pat1 ()
+ val  (pat_list as pat_list1) = pat_list1 ()
+ in ((*#line 298.30 "parser.grm"*) (pat :: pat_list) (*#line 1449.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 29,(result,pat1left,pat_list1right),rest671) end
-| (99,(_,(MlyValue.pat pat1,pat1left,pat1right))::rest671) => let val 
-result=MlyValue.or_pat_list(fn _ => let val pat as pat1=pat1 ()
- in ( [pat] ) end
+end)
+ in ( LrTable.NT 29, ( result, pat1left, pat_list1right), rest671)
+end
+|  ( 99, ( ( _, ( MlyValue.pat pat1, pat1left, pat1right)) :: rest671)) => let val  result = MlyValue.or_pat_list (fn _ => let val  (pat as pat1) = pat1 ()
+ in ((*#line 301.31 "parser.grm"*) [pat] (*#line 1456.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 30,(result,pat1left,pat1right),rest671) end
-| (100,(_,(MlyValue.or_pat_list or_pat_list1,_,or_pat_list1right))::_
-::(_,(MlyValue.pat pat1,pat1left,_))::rest671) => let val result=
-MlyValue.or_pat_list(fn _ => let val pat as pat1=pat1 ()
-val or_pat_list as or_pat_list1=or_pat_list1 ()
- in ( (pat :: or_pat_list) ) end
+end)
+ in ( LrTable.NT 30, ( result, pat1left, pat1right), rest671)
+end
+|  ( 100, ( ( _, ( MlyValue.or_pat_list or_pat_list1, _, or_pat_list1right)) :: _ :: ( _, ( MlyValue.pat pat1, pat1left, _)) :: rest671)) => let val  result = MlyValue.or_pat_list (fn _ => let val  (pat as pat1) = pat1 ()
+ val  (or_pat_list as or_pat_list1) = or_pat_list1 ()
+ in ((*#line 302.31 "parser.grm"*) (pat :: or_pat_list) (*#line 1462.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 30,(result,pat1left,or_pat_list1right),rest671) end
-| (101,(_,(MlyValue.exp exp1,exp1left,exp1right))::rest671) => let 
-val result=MlyValue.exp_ps(fn _ => let val exp as exp1=exp1 ()
- in ( exp ) end
+end)
+ in ( LrTable.NT 30, ( result, pat1left, or_pat_list1right), rest671)
+end
+|  ( 101, ( ( _, ( MlyValue.exp exp1, exp1left, exp1right)) :: rest671)) => let val  result = MlyValue.exp_ps (fn _ => let val  (exp as exp1) = exp1 ()
+ in ((*#line 307.32 "parser.grm"*) exp (*#line 1469.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 39,(result,exp1left,exp1right),rest671) end
-| (102,(_,(MlyValue.ty ty1,_,ty1right))::_::(_,(MlyValue.exp exp1,
-exp1left,_))::rest671) => let val result=MlyValue.exp(fn _ => let val 
-exp as exp1=exp1 ()
-val ty as ty1=ty1 ()
- in ( ConstraintExp {expr=exp,constraint=ty} ) end
+end)
+ in ( LrTable.NT 39, ( result, exp1left, exp1right), rest671)
+end
+|  ( 102, ( ( _, ( MlyValue.ty ty1, _, ty1right)) :: _ :: ( _, ( MlyValue.exp exp1, exp1left, _)) :: rest671)) => let val  result = MlyValue.exp (fn _ => let val  (exp as exp1) = exp1 ()
+ val  (ty as ty1) = ty1 ()
+ in ((*#line 311.26 "parser.grm"*) ConstraintExp {expr=exp,constraint=ty} (*#line 1475.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 36,(result,exp1left,ty1right),rest671) end
-| (103,(_,(MlyValue.app_exp app_exp1,app_exp1left,app_exp1right))::
-rest671) => let val result=MlyValue.exp(fn _ => let val app_exp as 
-app_exp1=app_exp1 ()
- in ( FlatAppExp app_exp ) end
+end)
+ in ( LrTable.NT 36, ( result, exp1left, ty1right), rest671)
+end
+|  ( 103, ( ( _, ( MlyValue.app_exp app_exp1, app_exp1left, app_exp1right)) :: rest671)) => let val  result = MlyValue.exp (fn _ => let val  (app_exp as app_exp1) = app_exp1 ()
+ in ((*#line 312.26 "parser.grm"*) FlatAppExp app_exp (*#line 1482.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 36,(result,app_exp1left,app_exp1right),rest671) end
-| (104,(_,(MlyValue.aexp aexp1,aexp1left,aexp1right))::rest671) => 
-let val result=MlyValue.app_exp(fn _ => let val aexp as aexp1=aexp1 ()
- in ( [aexp] ) end
+end)
+ in ( LrTable.NT 36, ( result, app_exp1left, app_exp1right), rest671)
+end
+|  ( 104, ( ( _, ( MlyValue.aexp aexp1, aexp1left, aexp1right)) :: rest671)) => let val  result = MlyValue.app_exp (fn _ => let val  (aexp as aexp1) = aexp1 ()
+ in ((*#line 315.26 "parser.grm"*) [aexp] (*#line 1488.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 37,(result,aexp1left,aexp1right),rest671) end
-| (105,(_,(MlyValue.ident ident1,ident1left,ident1right))::rest671)
- => let val result=MlyValue.app_exp(fn _ => let val ident as ident1=
-ident1 ()
- in ( [VarExp [ident]] ) end
+end)
+ in ( LrTable.NT 37, ( result, aexp1left, aexp1right), rest671)
+end
+|  ( 105, ( ( _, ( MlyValue.ident ident1, ident1left, ident1right)) :: rest671)) => let val  result = MlyValue.app_exp (fn _ => let val  (ident as ident1) = ident1 ()
+ in ((*#line 316.26 "parser.grm"*) [VarExp [ident]] (*#line 1494.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 37,(result,ident1left,ident1right),rest671) end
-| (106,(_,(MlyValue.app_exp app_exp1,_,app_exp1right))::(_,(
-MlyValue.aexp aexp1,aexp1left,_))::rest671) => let val result=
-MlyValue.app_exp(fn _ => let val aexp as aexp1=aexp1 ()
-val app_exp as app_exp1=app_exp1 ()
- in ( aexp :: app_exp ) end
+end)
+ in ( LrTable.NT 37, ( result, ident1left, ident1right), rest671)
+end
+|  ( 106, ( ( _, ( MlyValue.app_exp app_exp1, _, app_exp1right)) :: ( _, ( MlyValue.aexp aexp1, aexp1left, _)) :: rest671)) => let val  result = MlyValue.app_exp (fn _ => let val  (aexp as aexp1) = aexp1 ()
+ val  (app_exp as app_exp1) = app_exp1 ()
+ in ((*#line 317.26 "parser.grm"*) aexp :: app_exp (*#line 1500.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 37,(result,aexp1left,app_exp1right),rest671) end
-| (107,(_,(MlyValue.app_exp app_exp1,_,app_exp1right))::(_,(
-MlyValue.ident ident1,ident1left,_))::rest671) => let val result=
-MlyValue.app_exp(fn _ => let val ident as ident1=ident1 ()
-val app_exp as app_exp1=app_exp1 ()
- in ( VarExp [ident] :: app_exp ) end
+end)
+ in ( LrTable.NT 37, ( result, aexp1left, app_exp1right), rest671)
+end
+|  ( 107, ( ( _, ( MlyValue.app_exp app_exp1, _, app_exp1right)) :: ( _, ( MlyValue.ident ident1, ident1left, _)) :: rest671)) => let val  result = MlyValue.app_exp (fn _ => let val  (ident as ident1) = ident1 ()
+ val  (app_exp as app_exp1) = app_exp1 ()
+ in ((*#line 318.26 "parser.grm"*) VarExp [ident] :: app_exp (*#line 1507.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 37,(result,ident1left,app_exp1right),rest671) end
-| (108,(_,(MlyValue.ident ident1,_,ident1right))::(_,(_,OP1left,_))::
-rest671) => let val result=MlyValue.aexp(fn _ => let val ident as 
-ident1=ident1 ()
- in ( VarExp [ident] ) end
+end)
+ in ( LrTable.NT 37, ( result, ident1left, app_exp1right), rest671)
+end
+|  ( 108, ( ( _, ( MlyValue.ident ident1, _, ident1right)) :: ( _, ( _, OP1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (ident as ident1) = ident1 ()
+ in ((*#line 320.37 "parser.grm"*) VarExp [ident] (*#line 1514.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,OP1left,ident1right),rest671) end
-| (109,(_,(MlyValue.qid qid1,_,qid1right))::_::(_,(MlyValue.idclass 
-idclass1,idclass1left,_))::rest671) => let val result=MlyValue.aexp(
-fn _ => let val idclass as idclass1=idclass1 ()
-val qid as qid1=qid1 ()
- in ( VarExp (idclass :: qid) ) end
+end)
+ in ( LrTable.NT 38, ( result, OP1left, ident1right), rest671)
+end
+|  ( 109, ( ( _, ( MlyValue.qid qid1, _, qid1right)) :: _ :: ( _, ( MlyValue.idclass idclass1, idclass1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ val  (qid as qid1) = qid1 ()
+ in ((*#line 321.37 "parser.grm"*) VarExp (idclass :: qid) (*#line 1520.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,idclass1left,qid1right),rest671) end
-| (110,(_,(MlyValue.int int1,int1left,int1right))::rest671) => let 
-val result=MlyValue.aexp(fn _ => let val int as int1=int1 ()
- in ( IntExp int ) end
+end)
+ in ( LrTable.NT 38, ( result, idclass1left, qid1right), rest671)
+end
+|  ( 110, ( ( _, ( MlyValue.int int1, int1left, int1right)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (int as int1) = int1 ()
+ in ((*#line 322.37 "parser.grm"*) IntExp int (*#line 1527.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,int1left,int1right),rest671) end
-| (111,(_,(MlyValue.WORD WORD1,WORD1left,WORD1right))::rest671) => 
-let val result=MlyValue.aexp(fn _ => let val WORD as WORD1=WORD1 ()
- in ( WordExp WORD ) end
+end)
+ in ( LrTable.NT 38, ( result, int1left, int1right), rest671)
+end
+|  ( 111, ( ( _, ( MlyValue.WORD WORD1, WORD1left, WORD1right)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (WORD as WORD1) = WORD1 ()
+ in ((*#line 323.37 "parser.grm"*) WordExp WORD (*#line 1533.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,WORD1left,WORD1right),rest671) end
-| (112,(_,(MlyValue.REAL REAL1,REAL1left,REAL1right))::rest671) => 
-let val result=MlyValue.aexp(fn _ => let val REAL as REAL1=REAL1 ()
- in ( RealExp REAL ) end
+end)
+ in ( LrTable.NT 38, ( result, WORD1left, WORD1right), rest671)
+end
+|  ( 112, ( ( _, ( MlyValue.REAL REAL1, REAL1left, REAL1right)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (REAL as REAL1) = REAL1 ()
+ in ((*#line 324.37 "parser.grm"*) RealExp REAL (*#line 1539.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,REAL1left,REAL1right),rest671) end
-| (113,(_,(MlyValue.STRING STRING1,STRING1left,STRING1right))::rest671
-) => let val result=MlyValue.aexp(fn _ => let val STRING as STRING1=
-STRING1 ()
- in ( StringExp STRING ) end
+end)
+ in ( LrTable.NT 38, ( result, REAL1left, REAL1right), rest671)
+end
+|  ( 113, ( ( _, ( MlyValue.STRING STRING1, STRING1left, STRING1right)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (STRING as STRING1) = STRING1 ()
+ in ((*#line 325.37 "parser.grm"*) StringExp STRING (*#line 1545.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,STRING1left,STRING1right),rest671) end
-| (114,(_,(MlyValue.CHAR CHAR1,CHAR1left,CHAR1right))::rest671) => 
-let val result=MlyValue.aexp(fn _ => let val CHAR as CHAR1=CHAR1 ()
- in ( CharExp CHAR ) end
+end)
+ in ( LrTable.NT 38, ( result, STRING1left, STRING1right), rest671)
+end
+|  ( 114, ( ( _, ( MlyValue.CHAR CHAR1, CHAR1left, CHAR1right)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (CHAR as CHAR1) = CHAR1 ()
+ in ((*#line 326.37 "parser.grm"*) CharExp CHAR (*#line 1551.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,CHAR1left,CHAR1right),rest671) end
-| (115,(_,(MlyValue.selector selector1,_,selector1right))::(_,(_,
-HASH1left,_))::rest671) => let val result=MlyValue.aexp(fn _ => let 
-val selector as selector1=selector1 ()
- in ( SelectorExp selector ) end
+end)
+ in ( LrTable.NT 38, ( result, CHAR1left, CHAR1right), rest671)
+end
+|  ( 115, ( ( _, ( MlyValue.selector selector1, _, selector1right)) :: ( _, ( _, HASH1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (selector as selector1) = selector1 ()
+ in ((*#line 327.37 "parser.grm"*) SelectorExp selector (*#line 1557.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,HASH1left,selector1right),rest671) end
-| (116,(_,(_,_,RBRACE1right))::(_,(MlyValue.elabels elabels1,_,_))::(_
-,(_,LBRACE1left,_))::rest671) => let val result=MlyValue.aexp(fn _ => 
-let val elabels as elabels1=elabels1 ()
- in ( RecordExp elabels ) end
+end)
+ in ( LrTable.NT 38, ( result, HASH1left, selector1right), rest671)
+end
+|  ( 116, ( ( _, ( _, _, RBRACE1right)) :: ( _, ( MlyValue.elabels elabels1, _, _)) :: ( _, ( _, LBRACE1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (elabels as elabels1) = elabels1 ()
+ in ((*#line 328.37 "parser.grm"*) RecordExp elabels (*#line 1563.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,LBRACE1left,RBRACE1right),rest671) end
-| (117,(_,(_,_,RBRACE1right))::(_,(_,LBRACE1left,_))::rest671) => let 
-val result=MlyValue.aexp(fn _ => ( RecordExp [] ))
- in (LrTable.NT 38,(result,LBRACE1left,RBRACE1right),rest671) end
-| (118,(_,(_,_,RPAREN1right))::(_,(_,LPAREN1left,_))::rest671) => let 
-val result=MlyValue.aexp(fn _ => ( unitExp ))
- in (LrTable.NT 38,(result,LPAREN1left,RPAREN1right),rest671) end
-| (119,(_,(_,_,RPAREN1right))::(_,(MlyValue.exp_ps exp_ps1,_,_))::(_,(
-_,LPAREN1left,_))::rest671) => let val result=MlyValue.aexp(fn _ => 
-let val exp_ps as exp_ps1=exp_ps1 ()
- in ( exp_ps ) end
+end)
+ in ( LrTable.NT 38, ( result, LBRACE1left, RBRACE1right), rest671)
+end
+|  ( 117, ( ( _, ( _, _, RBRACE1right)) :: ( _, ( _, LBRACE1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => ((*#line 329.37 "parser.grm"*) RecordExp [] (*#line 1569.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 38, ( result, LBRACE1left, RBRACE1right), rest671)
+end
+|  ( 118, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => ((*#line 330.37 "parser.grm"*) unitExp (*#line 1573.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 38, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 119, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.exp_ps exp_ps1, _, _)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (exp_ps as exp_ps1) = exp_ps1 ()
+ in ((*#line 331.37 "parser.grm"*) exp_ps (*#line 1577.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,LPAREN1left,RPAREN1right),rest671) end
-| (120,(_,(_,_,RPAREN1right))::(_,(MlyValue.exp_2c exp_2c1,_,_))::(_,(
-_,LPAREN1left,_))::rest671) => let val result=MlyValue.aexp(fn _ => 
-let val exp_2c as exp_2c1=exp_2c1 ()
- in ( TupleExp exp_2c ) end
+end)
+ in ( LrTable.NT 38, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 120, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( MlyValue.exp_2c exp_2c1, _, _)) :: ( _, ( _, LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (exp_2c as exp_2c1) = exp_2c1 ()
+ in ((*#line 332.37 "parser.grm"*) TupleExp exp_2c (*#line 1583.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,LPAREN1left,RPAREN1right),rest671) end
-| (121,(_,(_,_,RBRACKET1right))::(_,(MlyValue.exp_list exp_list1,_,_))
-::(_,(_,LBRACKET1left,_))::rest671) => let val result=MlyValue.aexp(
-fn _ => let val exp_list as exp_list1=exp_list1 ()
- in ( ListExp exp_list ) end
+end)
+ in ( LrTable.NT 38, ( result, LPAREN1left, RPAREN1right), rest671)
+end
+|  ( 121, ( ( _, ( _, _, RBRACKET1right)) :: ( _, ( MlyValue.exp_list exp_list1, _, _)) :: ( _, ( _, LBRACKET1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (exp_list as exp_list1) = exp_list1 ()
+ in ((*#line 333.37 "parser.grm"*) ListExp exp_list (*#line 1589.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,LBRACKET1left,RBRACKET1right),rest671) end
-| (122,(_,(_,_,RBRACKET1right))::(_,(_,LBRACKET1left,_))::rest671) => 
-let val result=MlyValue.aexp(fn _ => ( ListExp [] ))
- in (LrTable.NT 38,(result,LBRACKET1left,RBRACKET1right),rest671) end
-| (123,(_,(_,_,RBRACKET1right))::(_,(MlyValue.exp_list exp_list1,_,_))
-::(_,(_,VECTORSTART1left,_))::rest671) => let val result=MlyValue.aexp
-(fn _ => let val exp_list as exp_list1=exp_list1 ()
- in ( VectorExp exp_list ) end
+end)
+ in ( LrTable.NT 38, ( result, LBRACKET1left, RBRACKET1right), rest671)
+end
+|  ( 122, ( ( _, ( _, _, RBRACKET1right)) :: ( _, ( _, LBRACKET1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => ((*#line 334.28 "parser.grm"*) ListExp [] (*#line 1595.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 38, ( result, LBRACKET1left, RBRACKET1right), rest671)
+end
+|  ( 123, ( ( _, ( _, _, RBRACKET1right)) :: ( _, ( MlyValue.exp_list exp_list1, _, _)) :: ( _, ( _, VECTORSTART1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => let val  (exp_list as exp_list1) = exp_list1 ()
+ in ((*#line 335.40 "parser.grm"*) VectorExp exp_list (*#line 1599.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 38,(result,VECTORSTART1left,RBRACKET1right),rest671)
- end
-| (124,(_,(_,_,RBRACKET1right))::(_,(_,VECTORSTART1left,_))::rest671)
- => let val result=MlyValue.aexp(fn _ => ( VectorExp [] ))
- in (LrTable.NT 38,(result,VECTORSTART1left,RBRACKET1right),rest671)
- end
-| (125,(_,(MlyValue.exp_2c exp_2c1,_,exp_2c1right))::_::(_,(
-MlyValue.exp exp1,exp1left,_))::rest671) => let val result=
-MlyValue.exp_2c(fn _ => let val exp as exp1=exp1 ()
-val exp_2c as exp_2c1=exp_2c1 ()
- in ( exp :: exp_2c ) end
+end)
+ in ( LrTable.NT 38, ( result, VECTORSTART1left, RBRACKET1right), rest671)
+end
+|  ( 124, ( ( _, ( _, _, RBRACKET1right)) :: ( _, ( _, VECTORSTART1left, _)) :: rest671)) => let val  result = MlyValue.aexp (fn _ => ((*#line 336.31 "parser.grm"*) VectorExp [] (*#line 1605.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 38, ( result, VECTORSTART1left, RBRACKET1right), rest671)
+end
+|  ( 125, ( ( _, ( MlyValue.exp_2c exp_2c1, _, exp_2c1right)) :: _ :: ( _, ( MlyValue.exp exp1, exp1left, _)) :: rest671)) => let val  result = MlyValue.exp_2c (fn _ => let val  (exp as exp1) = exp1 ()
+ val  (exp_2c as exp_2c1) = exp_2c1 ()
+ in ((*#line 339.37 "parser.grm"*) exp :: exp_2c (*#line 1609.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 40,(result,exp1left,exp_2c1right),rest671) end
-| (126,(_,(MlyValue.exp exp2,_,exp2right))::_::(_,(MlyValue.exp exp1,
-exp1left,_))::rest671) => let val result=MlyValue.exp_2c(fn _ => let 
-val exp1=exp1 ()
-val exp2=exp2 ()
- in ( [exp1, exp2] ) end
+end)
+ in ( LrTable.NT 40, ( result, exp1left, exp_2c1right), rest671)
+end
+|  ( 126, ( ( _, ( MlyValue.exp exp2, _, exp2right)) :: _ :: ( _, ( MlyValue.exp exp1, exp1left, _)) :: rest671)) => let val  result = MlyValue.exp_2c (fn _ => let val  exp1 = exp1 ()
+ val  exp2 = exp2 ()
+ in ((*#line 340.37 "parser.grm"*) [exp1, exp2] (*#line 1616.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 40,(result,exp1left,exp2right),rest671) end
-| (127,(_,(MlyValue.exp exp1,exp1left,exp1right))::rest671) => let 
-val result=MlyValue.exp_list(fn _ => let val exp as exp1=exp1 ()
- in ( [exp] ) end
+end)
+ in ( LrTable.NT 40, ( result, exp1left, exp2right), rest671)
+end
+|  ( 127, ( ( _, ( MlyValue.exp exp1, exp1left, exp1right)) :: rest671)) => let val  result = MlyValue.exp_list (fn _ => let val  (exp as exp1) = exp1 ()
+ in ((*#line 343.30 "parser.grm"*) [exp] (*#line 1623.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 41,(result,exp1left,exp1right),rest671) end
-| (128,(_,(MlyValue.exp_list exp_list1,_,exp_list1right))::_::(_,(
-MlyValue.exp exp1,exp1left,_))::rest671) => let val result=
-MlyValue.exp_list(fn _ => let val exp as exp1=exp1 ()
-val exp_list as exp_list1=exp_list1 ()
- in ( exp :: exp_list ) end
+end)
+ in ( LrTable.NT 41, ( result, exp1left, exp1right), rest671)
+end
+|  ( 128, ( ( _, ( MlyValue.exp_list exp_list1, _, exp_list1right)) :: _ :: ( _, ( MlyValue.exp exp1, exp1left, _)) :: rest671)) => let val  result = MlyValue.exp_list (fn _ => let val  (exp as exp1) = exp1 ()
+ val  (exp_list as exp_list1) = exp_list1 ()
+ in ((*#line 344.30 "parser.grm"*) exp :: exp_list (*#line 1629.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 41,(result,exp1left,exp_list1right),rest671) end
-| (129,(_,(MlyValue.exp exp1,_,exp1right))::_::(_,(MlyValue.selector 
-selector1,selector1left,_))::rest671) => let val result=
-MlyValue.elabel(fn _ => let val selector as selector1=selector1 ()
-val exp as exp1=exp1 ()
- in ( selector, exp ) end
+end)
+ in ( LrTable.NT 41, ( result, exp1left, exp_list1right), rest671)
+end
+|  ( 129, ( ( _, ( MlyValue.exp exp1, _, exp1right)) :: _ :: ( _, ( MlyValue.selector selector1, selector1left, _)) :: rest671)) => let val  result = MlyValue.elabel (fn _ => let val  (selector as selector1) = selector1 ()
+ val  (exp as exp1) = exp1 ()
+ in ((*#line 347.32 "parser.grm"*) selector, exp (*#line 1636.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 42,(result,selector1left,exp1right),rest671) end
-| (130,(_,(MlyValue.elabels elabels1,_,elabels1right))::_::(_,(
-MlyValue.elabel elabel1,elabel1left,_))::rest671) => let val result=
-MlyValue.elabels(fn _ => let val elabel as elabel1=elabel1 ()
-val elabels as elabels1=elabels1 ()
- in ( elabel :: elabels ) end
+end)
+ in ( LrTable.NT 42, ( result, selector1left, exp1right), rest671)
+end
+|  ( 130, ( ( _, ( MlyValue.elabels elabels1, _, elabels1right)) :: _ :: ( _, ( MlyValue.elabel elabel1, elabel1left, _)) :: rest671)) => let val  result = MlyValue.elabels (fn _ => let val  (elabel as elabel1) = elabel1 ()
+ val  (elabels as elabels1) = elabels1 ()
+ in ((*#line 350.32 "parser.grm"*) elabel :: elabels (*#line 1643.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 43,(result,elabel1left,elabels1right),rest671) end
-| (131,(_,(MlyValue.elabel elabel1,elabel1left,elabel1right))::rest671
-) => let val result=MlyValue.elabels(fn _ => let val elabel as elabel1
-=elabel1 ()
- in ( [elabel] ) end
+end)
+ in ( LrTable.NT 43, ( result, elabel1left, elabels1right), rest671)
+end
+|  ( 131, ( ( _, ( MlyValue.elabel elabel1, elabel1left, elabel1right)) :: rest671)) => let val  result = MlyValue.elabels (fn _ => let val  (elabel as elabel1) = elabel1 ()
+ in ((*#line 351.32 "parser.grm"*) [elabel] (*#line 1650.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 43,(result,elabel1left,elabel1right),rest671) end
-| (132,(_,(MlyValue.INT INT1,INT1left,INT1right))::rest671) => let 
-val result=MlyValue.int(fn _ => let val INT as INT1=INT1 ()
- in ( INT ) end
+end)
+ in ( LrTable.NT 43, ( result, elabel1left, elabel1right), rest671)
+end
+|  ( 132, ( ( _, ( MlyValue.INT INT1, INT1left, INT1right)) :: rest671)) => let val  result = MlyValue.int (fn _ => let val  (INT as INT1) = INT1 ()
+ in ((*#line 355.16 "parser.grm"*) INT (*#line 1656.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 50,(result,INT1left,INT1right),rest671) end
-| (133,(_,(MlyValue.INT0 INT01,INT01left,INT01right))::rest671) => 
-let val result=MlyValue.int(fn _ => let val INT0 as INT01=INT01 ()
- in ( INT0 ) end
+end)
+ in ( LrTable.NT 50, ( result, INT1left, INT1right), rest671)
+end
+|  ( 133, ( ( _, ( MlyValue.INT0 INT01, INT01left, INT01right)) :: rest671)) => let val  result = MlyValue.int (fn _ => let val  (INT0 as INT01) = INT01 ()
+ in ((*#line 356.16 "parser.grm"*) INT0 (*#line 1662.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 50,(result,INT01left,INT01right),rest671) end
-| (134,(_,(MlyValue.ID ID1,ID1left,ID1right))::rest671) => let val 
-result=MlyValue.idclass(fn _ => let val ID as ID1=ID1 ()
- in ( ID ) end
+end)
+ in ( LrTable.NT 50, ( result, INT01left, INT01right), rest671)
+end
+|  ( 134, ( ( _, ( MlyValue.ID ID1, ID1left, ID1right)) :: rest671)) => let val  result = MlyValue.idclass (fn _ => let val  (ID as ID1) = ID1 ()
+ in ((*#line 359.16 "parser.grm"*) ID (*#line 1668.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 49,(result,ID1left,ID1right),rest671) end
-| (135,(_,(_,OUT1left,OUT1right))::rest671) => let val result=
-MlyValue.idclass(fn _ => ( "out" ))
- in (LrTable.NT 49,(result,OUT1left,OUT1right),rest671) end
-| (136,(_,(MlyValue.idclass idclass1,idclass1left,idclass1right))::
-rest671) => let val result=MlyValue.id(fn _ => let val idclass as 
-idclass1=idclass1 ()
- in ( idclass ) end
+end)
+ in ( LrTable.NT 49, ( result, ID1left, ID1right), rest671)
+end
+|  ( 135, ( ( _, ( _, OUT1left, OUT1right)) :: rest671)) => let val  result = MlyValue.idclass (fn _ => ((*#line 360.16 "parser.grm"*) "out" (*#line 1674.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 49, ( result, OUT1left, OUT1right), rest671)
+end
+|  ( 136, ( ( _, ( MlyValue.idclass idclass1, idclass1left, idclass1right)) :: rest671)) => let val  result = MlyValue.id (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ in ((*#line 362.20 "parser.grm"*) idclass (*#line 1678.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 46,(result,idclass1left,idclass1right),rest671) end
-| (137,(_,(_,ASTERISK1left,ASTERISK1right))::rest671) => let val 
-result=MlyValue.id(fn _ => ( "*" ))
- in (LrTable.NT 46,(result,ASTERISK1left,ASTERISK1right),rest671) end
-| (138,(_,(MlyValue.idclass idclass1,idclass1left,idclass1right))::
-rest671) => let val result=MlyValue.ident(fn _ => let val idclass as 
-idclass1=idclass1 ()
- in ( idclass ) end
+end)
+ in ( LrTable.NT 46, ( result, idclass1left, idclass1right), rest671)
+end
+|  ( 137, ( ( _, ( _, ASTERISK1left, ASTERISK1right)) :: rest671)) => let val  result = MlyValue.id (fn _ => ((*#line 363.20 "parser.grm"*) "*" (*#line 1684.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 46, ( result, ASTERISK1left, ASTERISK1right), rest671)
+end
+|  ( 138, ( ( _, ( MlyValue.idclass idclass1, idclass1left, idclass1right)) :: rest671)) => let val  result = MlyValue.ident (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ in ((*#line 365.20 "parser.grm"*) idclass (*#line 1688.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 47,(result,idclass1left,idclass1right),rest671) end
-| (139,(_,(_,ASTERISK1left,ASTERISK1right))::rest671) => let val 
-result=MlyValue.ident(fn _ => ( "*" ))
- in (LrTable.NT 47,(result,ASTERISK1left,ASTERISK1right),rest671) end
-| (140,(_,(_,EQUALOP1left,EQUALOP1right))::rest671) => let val result=
-MlyValue.ident(fn _ => ( "=" ))
- in (LrTable.NT 47,(result,EQUALOP1left,EQUALOP1right),rest671) end
-| (141,(_,(MlyValue.ident ident1,ident1left,ident1right))::rest671)
- => let val result=MlyValue.qid(fn _ => let val ident as ident1=ident1
- ()
- in ( [ident] ) end
+end)
+ in ( LrTable.NT 47, ( result, idclass1left, idclass1right), rest671)
+end
+|  ( 139, ( ( _, ( _, ASTERISK1left, ASTERISK1right)) :: rest671)) => let val  result = MlyValue.ident (fn _ => ((*#line 366.20 "parser.grm"*) "*" (*#line 1694.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 47, ( result, ASTERISK1left, ASTERISK1right), rest671)
+end
+|  ( 140, ( ( _, ( _, EQUALOP1left, EQUALOP1right)) :: rest671)) => let val  result = MlyValue.ident (fn _ => ((*#line 367.20 "parser.grm"*) "=" (*#line 1698.1 "parser.grm.sml"*)
+))
+ in ( LrTable.NT 47, ( result, EQUALOP1left, EQUALOP1right), rest671)
+end
+|  ( 141, ( ( _, ( MlyValue.ident ident1, ident1left, ident1right)) :: rest671)) => let val  result = MlyValue.qid (fn _ => let val  (ident as ident1) = ident1 ()
+ in ((*#line 370.30 "parser.grm"*) [ident] (*#line 1702.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 48,(result,ident1left,ident1right),rest671) end
-| (142,(_,(MlyValue.qid qid1,_,qid1right))::_::(_,(MlyValue.idclass 
-idclass1,idclass1left,_))::rest671) => let val result=MlyValue.qid(fn 
-_ => let val idclass as idclass1=idclass1 ()
-val qid as qid1=qid1 ()
- in ( idclass :: qid ) end
+end)
+ in ( LrTable.NT 48, ( result, ident1left, ident1right), rest671)
+end
+|  ( 142, ( ( _, ( MlyValue.qid qid1, _, qid1right)) :: _ :: ( _, ( MlyValue.idclass idclass1, idclass1left, _)) :: rest671)) => let val  result = MlyValue.qid (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ val  (qid as qid1) = qid1 ()
+ in ((*#line 371.27 "parser.grm"*) idclass :: qid (*#line 1708.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 48,(result,idclass1left,qid1right),rest671) end
-| (143,(_,(MlyValue.idclass idclass1,idclass1left,idclass1right))::
-rest671) => let val result=MlyValue.tycon(fn _ => let val idclass as 
-idclass1=idclass1 ()
- in ( [idclass] ) end
+end)
+ in ( LrTable.NT 48, ( result, idclass1left, qid1right), rest671)
+end
+|  ( 143, ( ( _, ( MlyValue.idclass idclass1, idclass1left, idclass1right)) :: rest671)) => let val  result = MlyValue.tycon (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ in ((*#line 373.30 "parser.grm"*) [idclass] (*#line 1715.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 45,(result,idclass1left,idclass1right),rest671) end
-| (144,(_,(MlyValue.tycon tycon1,_,tycon1right))::_::(_,(
-MlyValue.idclass idclass1,idclass1left,_))::rest671) => let val result
-=MlyValue.tycon(fn _ => let val idclass as idclass1=idclass1 ()
-val tycon as tycon1=tycon1 ()
- in ( idclass :: tycon ) end
+end)
+ in ( LrTable.NT 45, ( result, idclass1left, idclass1right), rest671)
+end
+|  ( 144, ( ( _, ( MlyValue.tycon tycon1, _, tycon1right)) :: _ :: ( _, ( MlyValue.idclass idclass1, idclass1left, _)) :: rest671)) => let val  result = MlyValue.tycon (fn _ => let val  (idclass as idclass1) = idclass1 ()
+ val  (tycon as tycon1) = tycon1 ()
+ in ((*#line 374.30 "parser.grm"*) idclass :: tycon (*#line 1721.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 45,(result,idclass1left,tycon1right),rest671) end
-| (145,(_,(MlyValue.id id1,id1left,id1right))::rest671) => let val 
-result=MlyValue.selector(fn _ => let val id as id1=id1 ()
- in ( id ) end
+end)
+ in ( LrTable.NT 45, ( result, idclass1left, tycon1right), rest671)
+end
+|  ( 145, ( ( _, ( MlyValue.id id1, id1left, id1right)) :: rest671)) => let val  result = MlyValue.selector (fn _ => let val  (id as id1) = id1 ()
+ in ((*#line 377.15 "parser.grm"*) id (*#line 1728.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 44,(result,id1left,id1right),rest671) end
-| (146,(_,(MlyValue.INT INT1,INT1left,INT1right))::rest671) => let 
-val result=MlyValue.selector(fn _ => let val INT as INT1=INT1 ()
- in ( Int.toString INT ) end
+end)
+ in ( LrTable.NT 44, ( result, id1left, id1right), rest671)
+end
+|  ( 146, ( ( _, ( MlyValue.INT INT1, INT1left, INT1right)) :: rest671)) => let val  result = MlyValue.selector (fn _ => let val  (INT as INT1) = INT1 ()
+ in ((*#line 378.15 "parser.grm"*) Int.toString INT (*#line 1734.1 "parser.grm.sml"*)
 )
- in (LrTable.NT 44,(result,INT1left,INT1right),rest671) end
+end)
+ in ( LrTable.NT 44, ( result, INT1left, INT1right), rest671)
+end
 | _ => raise (mlyAction i392)
 end
 val void = MlyValue.VOID
@@ -1774,161 +1749,83 @@ structure Tokens : SteadyCheck_TOKENS =
 struct
 type svalue = ParserData.svalue
 type ('a,'b) token = ('a,'b) Token.token
-fun EOF (p1,p2) = Token.TOKEN (ParserData.LrTable.T 0,(
-ParserData.MlyValue.VOID,p1,p2))
-fun SEMICOLON (p1,p2) = Token.TOKEN (ParserData.LrTable.T 1,(
-ParserData.MlyValue.VOID,p1,p2))
-fun ID (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 2,(
-ParserData.MlyValue.ID (fn () => i),p1,p2))
-fun TYVAR (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 3,(
-ParserData.MlyValue.TYVAR (fn () => i),p1,p2))
-fun INT (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 4,(
-ParserData.MlyValue.INT (fn () => i),p1,p2))
-fun INT0 (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 5,(
-ParserData.MlyValue.INT0 (fn () => i),p1,p2))
-fun WORD (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 6,(
-ParserData.MlyValue.WORD (fn () => i),p1,p2))
-fun REAL (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 7,(
-ParserData.MlyValue.REAL (fn () => i),p1,p2))
-fun STRING (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 8,(
-ParserData.MlyValue.STRING (fn () => i),p1,p2))
-fun CHAR (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 9,(
-ParserData.MlyValue.CHAR (fn () => i),p1,p2))
-fun ABSTYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 10,(
-ParserData.MlyValue.VOID,p1,p2))
-fun AND (p1,p2) = Token.TOKEN (ParserData.LrTable.T 11,(
-ParserData.MlyValue.VOID,p1,p2))
-fun ARROW (p1,p2) = Token.TOKEN (ParserData.LrTable.T 12,(
-ParserData.MlyValue.VOID,p1,p2))
-fun AS (p1,p2) = Token.TOKEN (ParserData.LrTable.T 13,(
-ParserData.MlyValue.VOID,p1,p2))
-fun BAR (p1,p2) = Token.TOKEN (ParserData.LrTable.T 14,(
-ParserData.MlyValue.VOID,p1,p2))
-fun CASE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 15,(
-ParserData.MlyValue.VOID,p1,p2))
-fun DATATYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 16,(
-ParserData.MlyValue.VOID,p1,p2))
-fun DOTDOTDOT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 17,(
-ParserData.MlyValue.VOID,p1,p2))
-fun ELSE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 18,(
-ParserData.MlyValue.VOID,p1,p2))
-fun END (p1,p2) = Token.TOKEN (ParserData.LrTable.T 19,(
-ParserData.MlyValue.VOID,p1,p2))
-fun EQUALOP (p1,p2) = Token.TOKEN (ParserData.LrTable.T 20,(
-ParserData.MlyValue.VOID,p1,p2))
-fun EQTYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 21,(
-ParserData.MlyValue.VOID,p1,p2))
-fun EXCEPTION (p1,p2) = Token.TOKEN (ParserData.LrTable.T 22,(
-ParserData.MlyValue.VOID,p1,p2))
-fun DO (p1,p2) = Token.TOKEN (ParserData.LrTable.T 23,(
-ParserData.MlyValue.VOID,p1,p2))
-fun DOT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 24,(
-ParserData.MlyValue.VOID,p1,p2))
-fun DARROW (p1,p2) = Token.TOKEN (ParserData.LrTable.T 25,(
-ParserData.MlyValue.VOID,p1,p2))
-fun FN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 26,(
-ParserData.MlyValue.VOID,p1,p2))
-fun FUN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 27,(
-ParserData.MlyValue.VOID,p1,p2))
-fun FUNCTOR (p1,p2) = Token.TOKEN (ParserData.LrTable.T 28,(
-ParserData.MlyValue.VOID,p1,p2))
-fun FUNSIG (p1,p2) = Token.TOKEN (ParserData.LrTable.T 29,(
-ParserData.MlyValue.VOID,p1,p2))
-fun HANDLE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 30,(
-ParserData.MlyValue.VOID,p1,p2))
-fun HASH (p1,p2) = Token.TOKEN (ParserData.LrTable.T 31,(
-ParserData.MlyValue.VOID,p1,p2))
-fun IF (p1,p2) = Token.TOKEN (ParserData.LrTable.T 32,(
-ParserData.MlyValue.VOID,p1,p2))
-fun IN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 33,(
-ParserData.MlyValue.VOID,p1,p2))
-fun OUT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 34,(
-ParserData.MlyValue.VOID,p1,p2))
-fun INCLUDE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 35,(
-ParserData.MlyValue.VOID,p1,p2))
-fun INFIX (p1,p2) = Token.TOKEN (ParserData.LrTable.T 36,(
-ParserData.MlyValue.VOID,p1,p2))
-fun INFIXR (p1,p2) = Token.TOKEN (ParserData.LrTable.T 37,(
-ParserData.MlyValue.VOID,p1,p2))
-fun LAZY (p1,p2) = Token.TOKEN (ParserData.LrTable.T 38,(
-ParserData.MlyValue.VOID,p1,p2))
-fun LET (p1,p2) = Token.TOKEN (ParserData.LrTable.T 39,(
-ParserData.MlyValue.VOID,p1,p2))
-fun LOCAL (p1,p2) = Token.TOKEN (ParserData.LrTable.T 40,(
-ParserData.MlyValue.VOID,p1,p2))
-fun NONFIX (p1,p2) = Token.TOKEN (ParserData.LrTable.T 41,(
-ParserData.MlyValue.VOID,p1,p2))
-fun OF (p1,p2) = Token.TOKEN (ParserData.LrTable.T 42,(
-ParserData.MlyValue.VOID,p1,p2))
-fun OP (p1,p2) = Token.TOKEN (ParserData.LrTable.T 43,(
-ParserData.MlyValue.VOID,p1,p2))
-fun OPEN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 44,(
-ParserData.MlyValue.VOID,p1,p2))
-fun OVERLOAD (p1,p2) = Token.TOKEN (ParserData.LrTable.T 45,(
-ParserData.MlyValue.VOID,p1,p2))
-fun RAISE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 46,(
-ParserData.MlyValue.VOID,p1,p2))
-fun REC (p1,p2) = Token.TOKEN (ParserData.LrTable.T 47,(
-ParserData.MlyValue.VOID,p1,p2))
-fun SHARING (p1,p2) = Token.TOKEN (ParserData.LrTable.T 48,(
-ParserData.MlyValue.VOID,p1,p2))
-fun SIG (p1,p2) = Token.TOKEN (ParserData.LrTable.T 49,(
-ParserData.MlyValue.VOID,p1,p2))
-fun SIGNATURE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 50,(
-ParserData.MlyValue.VOID,p1,p2))
-fun STRUCT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 51,(
-ParserData.MlyValue.VOID,p1,p2))
-fun STRUCTURE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 52,(
-ParserData.MlyValue.VOID,p1,p2))
-fun THEN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 53,(
-ParserData.MlyValue.VOID,p1,p2))
-fun TYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 54,(
-ParserData.MlyValue.VOID,p1,p2))
-fun VAL (p1,p2) = Token.TOKEN (ParserData.LrTable.T 55,(
-ParserData.MlyValue.VOID,p1,p2))
-fun WHERE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 56,(
-ParserData.MlyValue.VOID,p1,p2))
-fun WHILE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 57,(
-ParserData.MlyValue.VOID,p1,p2))
-fun WILD (p1,p2) = Token.TOKEN (ParserData.LrTable.T 58,(
-ParserData.MlyValue.VOID,p1,p2))
-fun WITH (p1,p2) = Token.TOKEN (ParserData.LrTable.T 59,(
-ParserData.MlyValue.VOID,p1,p2))
-fun WITHTYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 60,(
-ParserData.MlyValue.VOID,p1,p2))
-fun ASTERISK (p1,p2) = Token.TOKEN (ParserData.LrTable.T 61,(
-ParserData.MlyValue.VOID,p1,p2))
-fun COLON (p1,p2) = Token.TOKEN (ParserData.LrTable.T 62,(
-ParserData.MlyValue.VOID,p1,p2))
-fun COLONGT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 63,(
-ParserData.MlyValue.VOID,p1,p2))
-fun COMMA (p1,p2) = Token.TOKEN (ParserData.LrTable.T 64,(
-ParserData.MlyValue.VOID,p1,p2))
-fun LBRACE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 65,(
-ParserData.MlyValue.VOID,p1,p2))
-fun LBRACKET (p1,p2) = Token.TOKEN (ParserData.LrTable.T 66,(
-ParserData.MlyValue.VOID,p1,p2))
-fun LPAREN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 67,(
-ParserData.MlyValue.VOID,p1,p2))
-fun RBRACE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 68,(
-ParserData.MlyValue.VOID,p1,p2))
-fun RBRACKET (p1,p2) = Token.TOKEN (ParserData.LrTable.T 69,(
-ParserData.MlyValue.VOID,p1,p2))
-fun RPAREN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 70,(
-ParserData.MlyValue.VOID,p1,p2))
-fun ORELSE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 71,(
-ParserData.MlyValue.VOID,p1,p2))
-fun ANDALSO (p1,p2) = Token.TOKEN (ParserData.LrTable.T 72,(
-ParserData.MlyValue.VOID,p1,p2))
-fun VECTORSTART (p1,p2) = Token.TOKEN (ParserData.LrTable.T 73,(
-ParserData.MlyValue.VOID,p1,p2))
-fun BEGINQ (p1,p2) = Token.TOKEN (ParserData.LrTable.T 74,(
-ParserData.MlyValue.VOID,p1,p2))
-fun ENDQ (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 75,(
-ParserData.MlyValue.ENDQ (fn () => i),p1,p2))
-fun OBJL (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 76,(
-ParserData.MlyValue.OBJL (fn () => i),p1,p2))
-fun AQID (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 77,(
-ParserData.MlyValue.AQID (fn () => i),p1,p2))
+fun EOF (p1,p2) = Token.TOKEN (ParserData.LrTable.T 0,(ParserData.MlyValue.VOID,p1,p2))
+fun SEMICOLON (p1,p2) = Token.TOKEN (ParserData.LrTable.T 1,(ParserData.MlyValue.VOID,p1,p2))
+fun ID (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 2,(ParserData.MlyValue.ID (fn () => i),p1,p2))
+fun TYVAR (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 3,(ParserData.MlyValue.TYVAR (fn () => i),p1,p2))
+fun INT (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 4,(ParserData.MlyValue.INT (fn () => i),p1,p2))
+fun INT0 (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 5,(ParserData.MlyValue.INT0 (fn () => i),p1,p2))
+fun WORD (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 6,(ParserData.MlyValue.WORD (fn () => i),p1,p2))
+fun REAL (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 7,(ParserData.MlyValue.REAL (fn () => i),p1,p2))
+fun STRING (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 8,(ParserData.MlyValue.STRING (fn () => i),p1,p2))
+fun CHAR (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 9,(ParserData.MlyValue.CHAR (fn () => i),p1,p2))
+fun ABSTYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 10,(ParserData.MlyValue.VOID,p1,p2))
+fun AND (p1,p2) = Token.TOKEN (ParserData.LrTable.T 11,(ParserData.MlyValue.VOID,p1,p2))
+fun ARROW (p1,p2) = Token.TOKEN (ParserData.LrTable.T 12,(ParserData.MlyValue.VOID,p1,p2))
+fun AS (p1,p2) = Token.TOKEN (ParserData.LrTable.T 13,(ParserData.MlyValue.VOID,p1,p2))
+fun BAR (p1,p2) = Token.TOKEN (ParserData.LrTable.T 14,(ParserData.MlyValue.VOID,p1,p2))
+fun CASE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 15,(ParserData.MlyValue.VOID,p1,p2))
+fun DATATYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 16,(ParserData.MlyValue.VOID,p1,p2))
+fun DOTDOTDOT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 17,(ParserData.MlyValue.VOID,p1,p2))
+fun ELSE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 18,(ParserData.MlyValue.VOID,p1,p2))
+fun END (p1,p2) = Token.TOKEN (ParserData.LrTable.T 19,(ParserData.MlyValue.VOID,p1,p2))
+fun EQUALOP (p1,p2) = Token.TOKEN (ParserData.LrTable.T 20,(ParserData.MlyValue.VOID,p1,p2))
+fun EQTYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 21,(ParserData.MlyValue.VOID,p1,p2))
+fun EXCEPTION (p1,p2) = Token.TOKEN (ParserData.LrTable.T 22,(ParserData.MlyValue.VOID,p1,p2))
+fun DO (p1,p2) = Token.TOKEN (ParserData.LrTable.T 23,(ParserData.MlyValue.VOID,p1,p2))
+fun DOT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 24,(ParserData.MlyValue.VOID,p1,p2))
+fun DARROW (p1,p2) = Token.TOKEN (ParserData.LrTable.T 25,(ParserData.MlyValue.VOID,p1,p2))
+fun FN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 26,(ParserData.MlyValue.VOID,p1,p2))
+fun FUN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 27,(ParserData.MlyValue.VOID,p1,p2))
+fun FUNCTOR (p1,p2) = Token.TOKEN (ParserData.LrTable.T 28,(ParserData.MlyValue.VOID,p1,p2))
+fun FUNSIG (p1,p2) = Token.TOKEN (ParserData.LrTable.T 29,(ParserData.MlyValue.VOID,p1,p2))
+fun HANDLE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 30,(ParserData.MlyValue.VOID,p1,p2))
+fun HASH (p1,p2) = Token.TOKEN (ParserData.LrTable.T 31,(ParserData.MlyValue.VOID,p1,p2))
+fun IF (p1,p2) = Token.TOKEN (ParserData.LrTable.T 32,(ParserData.MlyValue.VOID,p1,p2))
+fun IN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 33,(ParserData.MlyValue.VOID,p1,p2))
+fun OUT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 34,(ParserData.MlyValue.VOID,p1,p2))
+fun INCLUDE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 35,(ParserData.MlyValue.VOID,p1,p2))
+fun INFIX (p1,p2) = Token.TOKEN (ParserData.LrTable.T 36,(ParserData.MlyValue.VOID,p1,p2))
+fun INFIXR (p1,p2) = Token.TOKEN (ParserData.LrTable.T 37,(ParserData.MlyValue.VOID,p1,p2))
+fun LAZY (p1,p2) = Token.TOKEN (ParserData.LrTable.T 38,(ParserData.MlyValue.VOID,p1,p2))
+fun LET (p1,p2) = Token.TOKEN (ParserData.LrTable.T 39,(ParserData.MlyValue.VOID,p1,p2))
+fun LOCAL (p1,p2) = Token.TOKEN (ParserData.LrTable.T 40,(ParserData.MlyValue.VOID,p1,p2))
+fun NONFIX (p1,p2) = Token.TOKEN (ParserData.LrTable.T 41,(ParserData.MlyValue.VOID,p1,p2))
+fun OF (p1,p2) = Token.TOKEN (ParserData.LrTable.T 42,(ParserData.MlyValue.VOID,p1,p2))
+fun OP (p1,p2) = Token.TOKEN (ParserData.LrTable.T 43,(ParserData.MlyValue.VOID,p1,p2))
+fun OPEN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 44,(ParserData.MlyValue.VOID,p1,p2))
+fun OVERLOAD (p1,p2) = Token.TOKEN (ParserData.LrTable.T 45,(ParserData.MlyValue.VOID,p1,p2))
+fun RAISE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 46,(ParserData.MlyValue.VOID,p1,p2))
+fun REC (p1,p2) = Token.TOKEN (ParserData.LrTable.T 47,(ParserData.MlyValue.VOID,p1,p2))
+fun SHARING (p1,p2) = Token.TOKEN (ParserData.LrTable.T 48,(ParserData.MlyValue.VOID,p1,p2))
+fun SIG (p1,p2) = Token.TOKEN (ParserData.LrTable.T 49,(ParserData.MlyValue.VOID,p1,p2))
+fun SIGNATURE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 50,(ParserData.MlyValue.VOID,p1,p2))
+fun STRUCT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 51,(ParserData.MlyValue.VOID,p1,p2))
+fun STRUCTURE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 52,(ParserData.MlyValue.VOID,p1,p2))
+fun THEN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 53,(ParserData.MlyValue.VOID,p1,p2))
+fun TYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 54,(ParserData.MlyValue.VOID,p1,p2))
+fun VAL (p1,p2) = Token.TOKEN (ParserData.LrTable.T 55,(ParserData.MlyValue.VOID,p1,p2))
+fun WHERE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 56,(ParserData.MlyValue.VOID,p1,p2))
+fun WHILE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 57,(ParserData.MlyValue.VOID,p1,p2))
+fun WILD (p1,p2) = Token.TOKEN (ParserData.LrTable.T 58,(ParserData.MlyValue.VOID,p1,p2))
+fun WITH (p1,p2) = Token.TOKEN (ParserData.LrTable.T 59,(ParserData.MlyValue.VOID,p1,p2))
+fun WITHTYPE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 60,(ParserData.MlyValue.VOID,p1,p2))
+fun ASTERISK (p1,p2) = Token.TOKEN (ParserData.LrTable.T 61,(ParserData.MlyValue.VOID,p1,p2))
+fun COLON (p1,p2) = Token.TOKEN (ParserData.LrTable.T 62,(ParserData.MlyValue.VOID,p1,p2))
+fun COLONGT (p1,p2) = Token.TOKEN (ParserData.LrTable.T 63,(ParserData.MlyValue.VOID,p1,p2))
+fun COMMA (p1,p2) = Token.TOKEN (ParserData.LrTable.T 64,(ParserData.MlyValue.VOID,p1,p2))
+fun LBRACE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 65,(ParserData.MlyValue.VOID,p1,p2))
+fun LBRACKET (p1,p2) = Token.TOKEN (ParserData.LrTable.T 66,(ParserData.MlyValue.VOID,p1,p2))
+fun LPAREN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 67,(ParserData.MlyValue.VOID,p1,p2))
+fun RBRACE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 68,(ParserData.MlyValue.VOID,p1,p2))
+fun RBRACKET (p1,p2) = Token.TOKEN (ParserData.LrTable.T 69,(ParserData.MlyValue.VOID,p1,p2))
+fun RPAREN (p1,p2) = Token.TOKEN (ParserData.LrTable.T 70,(ParserData.MlyValue.VOID,p1,p2))
+fun ORELSE (p1,p2) = Token.TOKEN (ParserData.LrTable.T 71,(ParserData.MlyValue.VOID,p1,p2))
+fun ANDALSO (p1,p2) = Token.TOKEN (ParserData.LrTable.T 72,(ParserData.MlyValue.VOID,p1,p2))
+fun VECTORSTART (p1,p2) = Token.TOKEN (ParserData.LrTable.T 73,(ParserData.MlyValue.VOID,p1,p2))
+fun BEGINQ (p1,p2) = Token.TOKEN (ParserData.LrTable.T 74,(ParserData.MlyValue.VOID,p1,p2))
+fun ENDQ (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 75,(ParserData.MlyValue.ENDQ (fn () => i),p1,p2))
+fun OBJL (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 76,(ParserData.MlyValue.OBJL (fn () => i),p1,p2))
+fun AQID (i,p1,p2) = Token.TOKEN (ParserData.LrTable.T 77,(ParserData.MlyValue.AQID (fn () => i),p1,p2))
 end
 end

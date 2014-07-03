@@ -1,8 +1,9 @@
-functor SteadyCheckLexFun(structure Tokens : SteadyCheck_TOKENS)=
+(*#line 51.10 "parser.lex"*)functor SteadyCheckLexFun(structure Tokens : SteadyCheck_TOKENS)(*#line 1.1 "parser.lex.sml"*)
+=
    struct
     structure UserDeclarations =
       struct
-(* -*- sml-lex -*-
+(*#line 1.1 "parser.lex"*)(* -*- sml-lex -*-
  * ml.lex
  *
  * Copyright 1989 by AT&T Bell Laboratories
@@ -49,6 +50,7 @@ val xtoi = cvt StringCvt.HEX
 end (* local *)
 fun inc (ri as ref i) = (ri := i+1)
 fun dec (ri as ref i) = (ri := i-1)
+(*#line 53.1 "parser.lex.sml"*)
 end (* end of user routines *)
 exception LexError (* raised if illegal leaf action tried *)
 structure Internal =
@@ -701,7 +703,7 @@ val s = [
 fun f x = x 
 val s = map f (rev (tl (rev s))) 
 exception LexHackingError 
-fun look ((j,x)::r, i) = if i = j then x else look(r, i) 
+fun look ((j,x)::r, i: int) = if i = j then x else look(r, i) 
   | look ([], i) = raise LexHackingError
 fun g {fin=x, trans=i} = {fin=x, trans=look(s,i)} 
 in Vector.fromList(map g 
@@ -837,8 +839,9 @@ type result = UserDeclarations.lexresult
 	exception LexerError (* raised if illegal leaf action tried *)
 end
 
+structure YYPosInt : INTEGER = Int
 fun makeLexer yyinput =
-let	val yygone0=1
+let	val yygone0= YYPosInt.fromInt ~1
 	val yyb = ref "\n" 		(* buffer *)
 	val yybl = ref 1		(*buffer length *)
 	val yybufpos = ref 1		(* location of next character to use *)
@@ -849,7 +852,7 @@ let	val yygone0=1
 	val YYBEGIN = fn (Internal.StartStates.STARTSTATE x) =>
 		 yybegin := x
 
-fun lex (yyarg as (arg as 
+fun lex (yyarg as ((*#line 52.7 "parser.lex"*)arg as 
 {
   comLevel,
   commonOperations = {onNewLine, ...},
@@ -865,7 +868,8 @@ fun lex (yyarg as (arg as
   stringBuf : string list ref,
   stringStart : int ref,
   stringType : bool ref
-})) =
+}(*#line 871.1 "parser.lex.sml"*)
+)) =
 let fun continue() : Internal.result = 
   let fun scan (s,AcceptingLeaves : Internal.yyfinstate list list,l,i0) =
 	let fun action (i,nil) = raise LexError
@@ -873,39 +877,55 @@ let fun continue() : Internal.result =
 	| action (i,(node::acts)::l) =
 		case node of
 		    Internal.N yyk => 
-			(let val yytext = substring(!yyb,i0,i-i0)
-			     val yypos = i0+ !yygone
+			(let fun yymktext() = substring(!yyb,i0,i-i0)
+			     val yypos = YYPosInt.+(YYPosInt.fromInt i0, !yygone)
 			fun REJECT() = action(i,acts::l)
 			open UserDeclarations Internal.StartStates
  in (yybufpos := i; case yyk of 
 
 			(* Application actions *)
 
-  101 => (Tokens.INT0(atoi(yytext, 0),yypos,yypos+size yytext))
-| 105 => (Tokens.INT0(atoi(yytext, 0),yypos,yypos+size yytext))
-| 110 => (Tokens.INT0(xtoi(yytext, 2),yypos,yypos+size yytext))
-| 116 => (Tokens.INT0(Int.~(xtoi(yytext, 3)),yypos,yypos+size yytext))
-| 121 => (Tokens.WORD(atoi(yytext, 2),yypos,yypos+size yytext))
-| 127 => (Tokens.WORD(xtoi(yytext, 3),yypos,yypos+size yytext))
-| 129 => (stringBuf := [""]; stringStart := yypos;
-                    stringType := true; YYBEGIN S; continue())
-| 132 => (stringBuf := [""]; stringStart := yypos;
-                    stringType := false; YYBEGIN S; continue())
-| 135 => (YYBEGIN A; stringStart := yypos; comLevel := 1; continue())
-| 138 => (error ("unmatched close comment",yypos,yypos+1);
-                    continue())
-| 140 => (error ("non-Ascii character",yypos,yypos); continue())
-| 142 => (error ("illegal token(" ^ yytext ^ ")",yypos,yypos+1);
-                    continue())
-| 145 => (inc comLevel; continue())
-| 150 => (onNewLine yypos; continue())
-| 153 => (
+  101 => let val yytext=yymktext() in (*#line 106.20 "parser.lex"*)Tokens.INT0(atoi(yytext, 0),yypos,yypos+size yytext)(*#line 888.1 "parser.lex.sml"*)
+ end
+| 105 => let val yytext=yymktext() in (*#line 107.21 "parser.lex"*)Tokens.INT0(atoi(yytext, 0),yypos,yypos+size yytext)(*#line 890.1 "parser.lex.sml"*)
+ end
+| 110 => let val yytext=yymktext() in (*#line 109.18 "parser.lex"*)Tokens.INT0(xtoi(yytext, 2),yypos,yypos+size yytext)(*#line 892.1 "parser.lex.sml"*)
+ end
+| 116 => let val yytext=yymktext() in (*#line 111.18 "parser.lex"*)Tokens.INT0(Int.~(xtoi(yytext, 3)),yypos,yypos+size yytext)(*#line 894.1 "parser.lex.sml"*)
+ end
+| 121 => let val yytext=yymktext() in (*#line 112.24 "parser.lex"*)Tokens.WORD(atoi(yytext, 2),yypos,yypos+size yytext)(*#line 896.1 "parser.lex.sml"*)
+ end
+| 127 => let val yytext=yymktext() in (*#line 114.18 "parser.lex"*)Tokens.WORD(xtoi(yytext, 3),yypos,yypos+size yytext)(*#line 898.1 "parser.lex.sml"*)
+ end
+| 129 => ((*#line 115.17 "parser.lex"*)stringBuf := [""]; stringStart := yypos;
+                    stringType := true; YYBEGIN S; continue()(*#line 901.1 "parser.lex.sml"*)
+)
+| 132 => ((*#line 117.19 "parser.lex"*)stringBuf := [""]; stringStart := yypos;
+                    stringType := false; YYBEGIN S; continue()(*#line 904.1 "parser.lex.sml"*)
+)
+| 135 => ((*#line 120.18 "parser.lex"*)YYBEGIN A; stringStart := yypos; comLevel := 1; continue()(*#line 906.1 "parser.lex.sml"*)
+)
+| 138 => ((*#line 121.19 "parser.lex"*)error ("unmatched close comment",yypos,yypos+1);
+                    continue()(*#line 909.1 "parser.lex.sml"*)
+)
+| 140 => ((*#line 123.17 "parser.lex"*)error ("non-Ascii character",yypos,yypos); continue()(*#line 911.1 "parser.lex.sml"*)
+)
+| 142 => let val yytext=yymktext() in (*#line 124.16 "parser.lex"*)error ("illegal token(" ^ yytext ^ ")",yypos,yypos+1);
+                    continue()(*#line 914.1 "parser.lex.sml"*)
+ end
+| 145 => ((*#line 126.14 "parser.lex"*)inc comLevel; continue()(*#line 916.1 "parser.lex.sml"*)
+)
+| 150 => ((*#line 127.14 "parser.lex"*)onNewLine yypos; continue()(*#line 918.1 "parser.lex.sml"*)
+)
+| 153 => ((*#line 128.13 "parser.lex"*)
              dec comLevel;
              if !comLevel=0 then YYBEGIN INITIAL else ();
              continue()
-           )
-| 155 => (continue())
-| 157 => (let
+           (*#line 924.1 "parser.lex.sml"*)
+)
+| 155 => ((*#line 133.11 "parser.lex"*)continue()(*#line 926.1 "parser.lex.sml"*)
+)
+| 157 => ((*#line 135.19 "parser.lex"*)let
                       val s = makeString stringBuf
 (*
                       val s = if size s <> 1 andalso not(!stringType)
@@ -921,36 +941,55 @@ let fun continue() : Internal.result =
                     in
                       YYBEGIN INITIAL;
                       if !stringType then Tokens.STRING t else Tokens.CHAR t
-                    end)
-| 162 => (error ("unclosed string",!stringStart,yypos);
+                    end(*#line 944.1 "parser.lex.sml"*)
+)
+| 162 => ((*#line 152.14 "parser.lex"*)error ("unclosed string",!stringStart,yypos);
 		    onNewLine yypos;
 		    YYBEGIN INITIAL;
-                    Tokens.STRING(makeString stringBuf,!stringStart,yypos))
-| 168 => (onNewLine (yypos+1);YYBEGIN F; continue())
-| 17 => (Tokens.OVERLOAD(yypos,yypos+size yytext))
-| 172 => (YYBEGIN F; continue())
-| 175 => (addString(stringBuf, "\007"); continue())
-| 178 => (addString(stringBuf, "\008"); continue())
-| 181 => (addString(stringBuf, "\012"); continue())
-| 184 => (addString(stringBuf, "\010"); continue())
-| 187 => (addString(stringBuf, "\013"); continue())
-| 19 => (Tokens.WILD(yypos,yypos+1))
-| 190 => (addString(stringBuf, "\009"); continue())
-| 193 => (addString(stringBuf, "\011"); continue())
-| 196 => (addString(stringBuf, "\\"); continue())
-| 199 => (addString(stringBuf, "\""); continue())
-| 2 => (continue())
-| 203 => (addChar
+                    Tokens.STRING(makeString stringBuf,!stringStart,yypos)(*#line 949.1 "parser.lex.sml"*)
+)
+| 168 => ((*#line 156.21 "parser.lex"*)onNewLine (yypos+1);YYBEGIN F; continue()(*#line 951.1 "parser.lex.sml"*)
+)
+| 17 => let val yytext=yymktext() in (*#line 86.26 "parser.lex"*)Tokens.OVERLOAD(yypos,yypos+size yytext)(*#line 953.1 "parser.lex.sml"*)
+ end
+| 172 => ((*#line 157.18 "parser.lex"*)YYBEGIN F; continue()(*#line 955.1 "parser.lex.sml"*)
+)
+| 175 => ((*#line 158.13 "parser.lex"*)addString(stringBuf, "\007"); continue()(*#line 957.1 "parser.lex.sml"*)
+)
+| 178 => ((*#line 159.13 "parser.lex"*)addString(stringBuf, "\008"); continue()(*#line 959.1 "parser.lex.sml"*)
+)
+| 181 => ((*#line 160.13 "parser.lex"*)addString(stringBuf, "\012"); continue()(*#line 961.1 "parser.lex.sml"*)
+)
+| 184 => ((*#line 161.13 "parser.lex"*)addString(stringBuf, "\010"); continue()(*#line 963.1 "parser.lex.sml"*)
+)
+| 187 => ((*#line 162.13 "parser.lex"*)addString(stringBuf, "\013"); continue()(*#line 965.1 "parser.lex.sml"*)
+)
+| 19 => ((*#line 87.18 "parser.lex"*)Tokens.WILD(yypos,yypos+1)(*#line 967.1 "parser.lex.sml"*)
+)
+| 190 => ((*#line 163.13 "parser.lex"*)addString(stringBuf, "\009"); continue()(*#line 969.1 "parser.lex.sml"*)
+)
+| 193 => ((*#line 164.13 "parser.lex"*)addString(stringBuf, "\011"); continue()(*#line 971.1 "parser.lex.sml"*)
+)
+| 196 => ((*#line 165.14 "parser.lex"*)addString(stringBuf, "\\"); continue()(*#line 973.1 "parser.lex.sml"*)
+)
+| 199 => ((*#line 166.14 "parser.lex"*)addString(stringBuf, "\""); continue()(*#line 975.1 "parser.lex.sml"*)
+)
+| 2 => ((*#line 84.19 "parser.lex"*)continue()(*#line 977.1 "parser.lex.sml"*)
+)
+| 203 => let val yytext=yymktext() in (*#line 167.18 "parser.lex"*)addChar
                     (
                       stringBuf,
 		      Char.chr(Char.ord(String.sub(yytext,2))-Char.ord #"@")
                     );
-		    continue())
-| 207 => (error("illegal control escape; must be one of \
+		    continue()(*#line 984.1 "parser.lex.sml"*)
+ end
+| 207 => ((*#line 174.3 "parser.lex"*)error("illegal control escape; must be one of \
 	  \@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_",yypos,yypos+2);
-	 continue())
-| 21 => (Tokens.COMMA(yypos,yypos+1))
-| 212 => (let
+	 continue()(*#line 988.1 "parser.lex.sml"*)
+)
+| 21 => ((*#line 88.18 "parser.lex"*)Tokens.COMMA(yypos,yypos+1)(*#line 990.1 "parser.lex.sml"*)
+)
+| 212 => let val yytext=yymktext() in (*#line 178.3 "parser.lex"*)let
     val x = Char.ord(String.sub(yytext,1))*100
 	    +Char.ord(String.sub(yytext,2))*10
 	    +Char.ord(String.sub(yytext,3))
@@ -960,34 +999,59 @@ let fun continue() : Internal.result =
     then error ("illegal ascii escape",yypos,yypos+4)
     else addChar(stringBuf, Char.chr x);
     continue()
-  end)
-| 214 => (error ("illegal string escape",yypos,yypos+1); continue())
-| 216 => (error ("illegal non-printing character in string",yypos,yypos+1);
-             continue())
-| 23 => (Tokens.LBRACE(yypos,yypos+1))
-| 238 => (addString(stringBuf,yytext); continue())
-| 243 => (onNewLine yypos; continue())
-| 246 => (continue())
-| 248 => (YYBEGIN S; stringStart := yypos; continue())
-| 25 => (Tokens.RBRACE(yypos,yypos+1))
-| 250 => (error ("unclosed string",!stringStart,yypos);
+  end(*#line 1002.1 "parser.lex.sml"*)
+ end
+| 214 => ((*#line 189.11 "parser.lex"*)error ("illegal string escape",yypos,yypos+1); continue()(*#line 1004.1 "parser.lex.sml"*)
+)
+| 216 => ((*#line 191.10 "parser.lex"*)error ("illegal non-printing character in string",yypos,yypos+1);
+             continue()(*#line 1007.1 "parser.lex.sml"*)
+)
+| 23 => ((*#line 89.18 "parser.lex"*)Tokens.LBRACE(yypos,yypos+1)(*#line 1009.1 "parser.lex.sml"*)
+)
+| 238 => let val yytext=yymktext() in (*#line 194.21 "parser.lex"*)addString(stringBuf,yytext); continue()(*#line 1011.1 "parser.lex.sml"*)
+ end
+| 243 => ((*#line 196.14 "parser.lex"*)onNewLine yypos; continue()(*#line 1013.1 "parser.lex.sml"*)
+)
+| 246 => ((*#line 197.14 "parser.lex"*)continue()(*#line 1015.1 "parser.lex.sml"*)
+)
+| 248 => ((*#line 198.12 "parser.lex"*)YYBEGIN S; stringStart := yypos; continue()(*#line 1017.1 "parser.lex.sml"*)
+)
+| 25 => ((*#line 90.18 "parser.lex"*)Tokens.RBRACE(yypos,yypos+1)(*#line 1019.1 "parser.lex.sml"*)
+)
+| 250 => ((*#line 199.11 "parser.lex"*)error ("unclosed string",!stringStart,yypos);
 		    YYBEGIN INITIAL;
-                    Tokens.STRING(makeString stringBuf,!stringStart,yypos+1))
-| 27 => (Tokens.LBRACKET(yypos,yypos+1))
-| 30 => (Tokens.VECTORSTART(yypos,yypos+1))
-| 32 => (Tokens.RBRACKET(yypos,yypos+1))
-| 34 => (Tokens.SEMICOLON(yypos,yypos+1))
-| 36 => (inc comLevel; Tokens.LPAREN(yypos,yypos+1))
-| 38 => (dec comLevel; Tokens.RPAREN(yypos,yypos+1))
-| 40 => (Tokens.DOT(yypos,yypos+1))
-| 44 => (Tokens.DOTDOTDOT(yypos,yypos+3))
-| 52 => (TokTable.checkTyvar(yytext,yypos))
-| 55 => (TokTable.checkId(yytext, yypos))
-| 66 => (TokTable.checkSymId(yytext,yypos))
-| 7 => (onNewLine yypos; continue())
-| 75 => (TokTable.checkSymId(yytext,yypos))
-| 95 => (Tokens.REAL(yytext,yypos,yypos+size yytext))
-| 98 => (Tokens.INT(atoi(yytext, 0),yypos,yypos+size yytext))
+                    Tokens.STRING(makeString stringBuf,!stringStart,yypos+1)(*#line 1023.1 "parser.lex.sml"*)
+)
+| 27 => ((*#line 91.18 "parser.lex"*)Tokens.LBRACKET(yypos,yypos+1)(*#line 1025.1 "parser.lex.sml"*)
+)
+| 30 => ((*#line 92.19 "parser.lex"*)Tokens.VECTORSTART(yypos,yypos+1)(*#line 1027.1 "parser.lex.sml"*)
+)
+| 32 => ((*#line 93.18 "parser.lex"*)Tokens.RBRACKET(yypos,yypos+1)(*#line 1029.1 "parser.lex.sml"*)
+)
+| 34 => ((*#line 94.18 "parser.lex"*)Tokens.SEMICOLON(yypos,yypos+1)(*#line 1031.1 "parser.lex.sml"*)
+)
+| 36 => ((*#line 95.18 "parser.lex"*)inc comLevel; Tokens.LPAREN(yypos,yypos+1)(*#line 1033.1 "parser.lex.sml"*)
+)
+| 38 => ((*#line 96.18 "parser.lex"*)dec comLevel; Tokens.RPAREN(yypos,yypos+1)(*#line 1035.1 "parser.lex.sml"*)
+)
+| 40 => ((*#line 97.19 "parser.lex"*)Tokens.DOT(yypos,yypos+1)(*#line 1037.1 "parser.lex.sml"*)
+)
+| 44 => ((*#line 98.21 "parser.lex"*)Tokens.DOTDOTDOT(yypos,yypos+3)(*#line 1039.1 "parser.lex.sml"*)
+)
+| 52 => let val yytext=yymktext() in (*#line 100.8 "parser.lex"*)TokTable.checkTyvar(yytext,yypos)(*#line 1041.1 "parser.lex.sml"*)
+ end
+| 55 => let val yytext=yymktext() in (*#line 101.27 "parser.lex"*)TokTable.checkId(yytext, yypos)(*#line 1043.1 "parser.lex.sml"*)
+ end
+| 66 => let val yytext=yymktext() in (*#line 102.29 "parser.lex"*)TokTable.checkSymId(yytext,yypos)(*#line 1045.1 "parser.lex.sml"*)
+ end
+| 7 => ((*#line 85.20 "parser.lex"*)onNewLine yypos; continue()(*#line 1047.1 "parser.lex.sml"*)
+)
+| 75 => let val yytext=yymktext() in (*#line 103.29 "parser.lex"*)TokTable.checkSymId(yytext,yypos)(*#line 1049.1 "parser.lex.sml"*)
+ end
+| 95 => let val yytext=yymktext() in (*#line 104.21 "parser.lex"*)Tokens.REAL(yytext,yypos,yypos+size yytext)(*#line 1051.1 "parser.lex.sml"*)
+ end
+| 98 => let val yytext=yymktext() in (*#line 105.26 "parser.lex"*)Tokens.INT(atoi(yytext, 0),yypos,yypos+size yytext)(*#line 1053.1 "parser.lex.sml"*)
+ end
 | _ => raise Internal.LexerError
 
 		) end )
@@ -1004,12 +1068,13 @@ let fun continue() : Internal.result =
 		                  else action(l,NewAcceptingLeaves))
 		  else (if i0=l then yyb := newchars
 		     else yyb := substring(!yyb,i0,l-i0)^newchars;
-		     yygone := !yygone+i0;
+		     yygone := YYPosInt.+(!yygone, YYPosInt.fromInt i0);
 		     yybl := size (!yyb);
 		     scan (s,AcceptingLeaves,l-i0,0))
 	    end
-	  else let val NewChar = Char.ord(String.sub(!yyb,l))
-		val NewState = if NewChar<128 then Char.ord(String.sub(trans,NewChar)) else Char.ord(String.sub(trans,128))
+	  else let val NewChar = Char.ord(CharVector.sub(!yyb,l))
+		val NewChar = if NewChar<128 then NewChar else 128
+		val NewState = Char.ord(CharVector.sub(trans,NewChar))
 		in if NewState=0 then action(l,NewAcceptingLeaves)
 		else scan(NewState,NewAcceptingLeaves,l+1,i0)
 	end

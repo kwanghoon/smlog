@@ -1,3 +1,0 @@
-
-fun path (X, X, [X]).
-    path (X, Z, X::Nodes) = 

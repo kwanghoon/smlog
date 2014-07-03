@@ -1,7 +1,0 @@
-fun g : (int, int * int)
-
-fun g (X, (X,X)).
-
-fun f : (int, int * (int * int))
-
-fun f (X, (X,Y)) = g (X,Y).

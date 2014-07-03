@@ -1,3 +1,0 @@
-
-fun op+ : (int * int : in, int : out)
-
